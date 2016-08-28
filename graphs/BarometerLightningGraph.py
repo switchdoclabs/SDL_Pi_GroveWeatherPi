@@ -115,7 +115,11 @@ def  BarometerLightningGraph(source,days,delay):
 		pyplot.setp( ax.xaxis.get_majorticklabels(), rotation=70)
 		ax.xaxis.set_major_formatter(dates.DateFormatter('%m/%d-%H'))
 		pyplot.show()
-		pyplot.savefig("/home/pi/SDL_Pi_GroveWeatherPi/static/BarometerLightningGraph.png")	
+		try:
+			pyplot.savefig("/home/pi/RasPiConnectServer/static/BarometerLightningGraph.png")	
+		except:
+			pyplot.savefig("/home/pi/SDL_Pi_GroveWeatherPi/static/BarometerLightningGraph.png")	
+
 		
 	except mdb.Error, e:
   

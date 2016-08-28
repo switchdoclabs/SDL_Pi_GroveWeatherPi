@@ -107,7 +107,10 @@ def  PowerVoltageGraph(source,days,delay):
 		pylab.grid(True)
 
 		pyplot.show()
-		pyplot.savefig("/home/pi/SDL_Pi_GroveWeatherPi/static/PowerVoltageGraph.png",facecolor=fig.get_facecolor())	
+		try:
+			pyplot.savefig("/home/pi/RasPiConnectServer/static/PowerVoltageGraph.png",facecolor=fig.get_facecolor())	
+		except:
+			pyplot.savefig("/home/pi/SDL_Pi_GroveWeatherPi/static/PowerVoltageGraph.png",facecolor=fig.get_facecolor())	
 
 
 	except mdb.Error, e:

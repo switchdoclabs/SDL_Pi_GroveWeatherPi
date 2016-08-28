@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS GroveWeatherPi;
+USE GroveWeatherPi;
 -- phpMyAdmin SQL Dump
 -- version 3.4.11.1deb2+deb7u1
 -- http://www.phpmyadmin.net
@@ -17,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `WeatherPi`
+-- Database: `GroveWeatherPi`
 --
 
 -- --------------------------------------------------------

@@ -27,3 +27,5 @@ HTU21DF_Present = False
 AM2315_Present = False
 ADS1015_Present = False
 ADS1115_Present = False
+OLED_Present = False
+WXLink_Present = False
