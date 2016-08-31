@@ -39,6 +39,8 @@ If you have a WXLink wireless transmitter installed, the software assumes you ha
 
 http://www.switchdoc.com/
 
+August 30, 2016 - Improved WXLink support reliablity - now detects and adjusts for missing records from WXLink reads
+
 August 26, 2016 - Added Support for WXLink Wireless Weather Connector
 
 August 17, 2016 -  Added support back in for RasPiConnect 

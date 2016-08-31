@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 #
 # GroveWeatherPi Solar Powered Weather Station
 # Version 2.1 August 18, 2016 
@@ -561,65 +561,68 @@ def readWXLink(block1, block2):
                 oldblock1 = block1
                 oldblock2 = block2
                 try:
-                        print "-----------"
-                        print "block 1"
                         block1 = WXLink.read_i2c_block_data(0x08, 0);
-                        print ''.join('{:02x}'.format(x) for x in block1)
-                        block1 = bytearray(block1)
-                        print "block 2"
                         block2 = WXLink.read_i2c_block_data(0x08, 1);
-                        block2 = bytearray(block2)
-                        print ''.join('{:02x}'.format(x) for x in block2)
-                        print "-----------"
+                	print "-----------"
+                	print "block 1"
+                	print ''.join('{:02x}'.format(x) for x in block1)
+                	block1 = bytearray(block1)
+                	print "block 2"
+                	block2 = bytearray(block2)
+                	print ''.join('{:02x}'.format(x) for x in block2)
+                	print "-----------"
                 except:
                         print "WXLink Read failed - Old Data Kept"
                         block1 = oldblock1
                         block2 = oldblock2
 
-                currentWindSpeed = struct.unpack('f', str(block1[9:13]))[0]    /1.6
+		if ((len(block1) > 0) and (len(block2) > 0)):
+                	currentWindSpeed = struct.unpack('f', str(block1[9:13]))[0] 
 
-                currentWindGust = 0.0   # not implemented in Solar WXLink version
-
-                totalRain = struct.unpack('l', str(block1[17:21]))[0]/25.4
-
-                print("Rain Total=\t%0.2f in")%(totalRain)
-                print("Wind Speed=\t%0.2f MPH")%(currentWindSpeed)
-
-                currentWindDirection = struct.unpack('H', str(block1[7:9]))[0]
-                print "Wind Direction=\t\t\t %i Degrees" % currentWindDirection
-
-                # now do the AM2315 Temperature
-                temperature = struct.unpack('f', str(block1[25:29]))[0]
-                elements = [block1[29], block1[30], block1[31], block2[0]]
-                outHByte = bytearray(elements)
-                humidity = struct.unpack('f', str(outHByte))[0]
-                print "AM2315 from WXLink temperature: %0.1f" % temperature
-                print "AM2315 from WXLink humidity: %0.1f" % humidity
-
-
-
-                # now read the SunAirPlus Data from WXLink
-
-                batteryVoltage = struct.unpack('f', str(block2[1:5]))[0]
-                batteryCurrent = struct.unpack('f', str(block2[5:9]))[0]
-                loadCurrent = struct.unpack('f', str(block2[9:13]))[0]
-                solarPanelVoltage = struct.unpack('f', str(block2[13:17]))[0]
-                solarPanelCurrent = struct.unpack('f', str(block2[17:21]))[0]
-
-                auxA = struct.unpack('f', str(block2[21:25]))[0]
+                	currentWindGust = 0.0   # not implemented in Solar WXLink version
+	
+                	totalRain = struct.unpack('l', str(block1[17:21]))[0]
+	
+                	print("Rain Total=\t%0.2f in")%(totalRain/25.4)
+                	print("Wind Speed=\t%0.2f MPH")%(currentWindSpeed/1.6)
+	
+                	currentWindDirection = struct.unpack('H', str(block1[7:9]))[0]
+                	print "Wind Direction=\t\t\t %i Degrees" % currentWindDirection
+		
+                	# now do the AM2315 Temperature
+                	temperature = struct.unpack('f', str(block1[25:29]))[0]
+                	elements = [block1[29], block1[30], block1[31], block2[0]]
+                	outHByte = bytearray(elements)
+                	humidity = struct.unpack('f', str(outHByte))[0]
+                	print "AM2315 from WXLink temperature: %0.1fC" % temperature
+                	print "AM2315 from WXLink humidity: %0.1f%%" % humidity
 
 
-                print "WXLink batteryVoltage = %6.2f" % batteryVoltage
-                print "WXLink batteryCurrent = %6.2f" % batteryCurrent
-                print "WXLink loadCurrent = %6.2f" % loadCurrent
-                print "WXLink solarPanelVoltage = %6.2f" % solarPanelVoltage
-                print "WXLink solarPanelCurrent = %6.2f" % solarPanelCurrent
-                print "WXLink auxA = %6.2f" % auxA
 
-                # message ID
-                MessageID = struct.unpack('l', str(block2[25:29]))[0]
-                print "WXLink Message ID %i" % MessageID
+                	# now read the SunAirPlus Data from WXLink
+	
+                	batteryVoltage = struct.unpack('f', str(block2[1:5]))[0]
+                	batteryCurrent = struct.unpack('f', str(block2[5:9]))[0]
+                	loadCurrent = struct.unpack('f', str(block2[9:13]))[0]
+                	solarPanelVoltage = struct.unpack('f', str(block2[13:17]))[0]
+                	solarPanelCurrent = struct.unpack('f', str(block2[17:21]))[0]
+				
+                	auxA = struct.unpack('f', str(block2[21:25]))[0]
 
+
+                	print "WXLink batteryVoltage = %6.2f" % batteryVoltage
+                	print "WXLink batteryCurrent = %6.2f" % batteryCurrent
+                	print "WXLink loadCurrent = %6.2f" % loadCurrent
+                	print "WXLink solarPanelVoltage = %6.2f" % solarPanelVoltage
+                	print "WXLink solarPanelCurrent = %6.2f" % solarPanelCurrent
+                	print "WXLink auxA = %6.2f" % auxA
+
+                	# message ID
+                	MessageID = struct.unpack('l', str(block2[25:29]))[0]
+                	print "WXLink Message ID %i" % MessageID
+		else:
+			return []
+	
 		# return list
 		returnList = []
 		returnList.append(block1) 
@@ -712,23 +715,35 @@ def sampleWeather():
 
 
 	if (config.WXLink_Present == False):
- 		currentWindSpeed = weatherStation.current_wind_speed()/1.6
-  		currentWindGust = weatherStation.get_wind_gust()/1.6
-  		totalRain = totalRain + weatherStation.get_current_rain_total()/25.4
+ 		currentWindSpeed = weatherStation.current_wind_speed()
+  		currentWindGust = weatherStation.get_wind_gust()
+  		totalRain = totalRain + weatherStation.get_current_rain_total()
 		currentWindDirection = weatherStation.current_wind_direction()
 		currentWindDirectionVoltage = weatherStation.current_wind_direction_voltage()
 	else:
 		# WXLink Data Gathering
 		returnList = readWXLink(block1, block2)
- 		
-		currentWindSpeed = returnList[2]/1.6
-  		currentWindGust = 0.0 # not supported
-  		totalRain = returnList[4]/25.4
-		currentWindDirection = returnList[5]
-		currentWindDirectionVoltage =  0.0 # not supported
+ 	
+		if (len(returnList) > 0):		
+			
+			currentWindSpeed = returnList[2]
+  			currentWindGust = 0.0 # not supported
+  			totalRain = returnList[4]
+			currentWindDirection = returnList[5]
+			currentWindDirectionVoltage =  0.0 # not supported
 
-    		outsideTemperature = returnList[6]
-    		outsideHumidity = returnList[7]
+    			outsideTemperature = returnList[6]
+    			outsideHumidity = returnList[7]
+		else:
+
+			currentWindSpeed = 0.0 
+  			currentWindGust = 0.0 # not supported
+  			totalRain = 0.0 
+			currentWindDirection = 0
+			currentWindDirectionVoltage =  0.0 # not supported
+
+    			outsideTemperature = 0.0 
+    			outsideHumidity =  0.0
 		
         print "----------------- "
 
@@ -865,30 +880,45 @@ def sampleAndDisplay():
 
 	if (config.WXLink_Present == False):
 
- 		currentWindSpeed = weatherStation.current_wind_speed()/1.6
-  		currentWindGust = weatherStation.get_wind_gust()/1.6
-  		totalRain = totalRain + weatherStation.get_current_rain_total()/25.4
+ 		currentWindSpeed = weatherStation.current_wind_speed()
+  		currentWindGust = weatherStation.get_wind_gust()
+  		totalRain = totalRain + weatherStation.get_current_rain_total()
 
 	else:
 		# WXLink Data Gathering
 		returnList = readWXLink(block1, block2)
-		
-		currentWindSpeed = returnList[2]/1.6
-  		currentWindGust = 0.0 # not supported
-  		totalRain = returnList[4]/25.4
-		currentWindDirection = returnList[5]
-		currentWindDirectionVoltage =  0.0 # not supported
+	
+		if (len(returnList) > 0):	
+			currentWindSpeed = returnList[2]
+  			currentWindGust = 0.0 # not supported
+  			totalRain = returnList[4]
+			currentWindDirection = returnList[5]
+			currentWindDirectionVoltage =  0.0 # not supported
+	
+	
+    			outsideTemperature = returnList[6]
+    			outsideHumidity = returnList[7]
+		else:
+
+			print returnList
+			print "Bad WXLink Reading"
+			currentWindSpeed = 0.0 
+  			currentWindGust = 0.0 # not supported
+  			totalRain = 0.0 
+			currentWindDirection = 0
+			currentWindDirectionVoltage =  0.0 # not supported
+
+    			outsideTemperature = 0.0 
+    			outsideHumidity =  0.0
 
 
-    		outsideTemperature = returnList[6]
-    		outsideHumidity = returnList[7]
     		print "outsideTemperature: %0.1f C" % outsideTemperature
     		print "outsideHumidity: %0.1f %%" % outsideHumidity
 
 
-  	print("Rain Total=\t%0.2f in")%(totalRain)
-  	print("Wind Speed=\t%0.2f MPH")%(currentWindSpeed)
-    	print("MPH wind_gust=\t%0.2f MPH")%(currentWindGust)
+  	print("Rain Total=\t%0.2f in")%(totalRain/25.4)
+  	print("Wind Speed=\t%0.2f MPH")%(currentWindSpeed/1.6)
+    	print("MPH wind_gust=\t%0.2f MPH")%(currentWindGust/1.6)
   	
 	if (config.WXLink_Present == False):	
         	if (config.ADS1015_Present or config.ADS1115_Present):
@@ -898,8 +928,8 @@ def sampleAndDisplay():
 			print "No Wind Direction Available - No ADS1015 or ADS1115 Present"
 
         if (config.OLED_Present):
-                Scroll_SSD1306.addLineOLED(display,  ("Wind Speed=\t%0.2f MPH")%(currentWindSpeed))
-                Scroll_SSD1306.addLineOLED(display,  ("Rain Total=\t%0.2f in")%(totalRain))
+                Scroll_SSD1306.addLineOLED(display,  ("Wind Speed=\t%0.2f MPH")%(currentWindSpeed/1.6))
+                Scroll_SSD1306.addLineOLED(display,  ("Rain Total=\t%0.2f in")%(totalRain/25.4))
                 if (config.ADS1015_Present or config.ADS1115_Present):
                         Scroll_SSD1306.addLineOLED(display,  "Wind Dir=%0.2f Degrees" % weatherStation.current_wind_direction())
 	
@@ -1228,10 +1258,10 @@ def checkInternetConnection():
     except urllib2.URLError:
         print "Internet Not Connected"
         time.sleep(1)
-	return false
+	return False
     else:
         print "Internet Connected"
-	return true
+	return True
 
 
 WLAN_check_flg = 0
@@ -1304,7 +1334,22 @@ pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.0")
 
 sendemail.sendEmail("test", "GroveWeatherPi Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
 
+if (config.SunAirPlus_Present == False):
 
+        	batteryCurrent = 0.0
+        	batteryVoltage = 4.00 
+		batteryPower = batteryVoltage * (batteryCurrent/1000)
+
+
+        	solarCurrent = 0.0 
+        	solarVoltage = 0.0 
+		solarPower = solarVoltage * (solarCurrent/1000)
+
+        	loadCurrent = 0.0
+        	loadVoltage = 0.0 
+		loadPower = loadVoltage * (loadCurrent/1000)
+
+		batteryCharge = 0 
 
 
 secondCount = 1
