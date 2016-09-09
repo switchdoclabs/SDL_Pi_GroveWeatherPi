@@ -24,7 +24,12 @@ import pylab
 
 import MySQLdb as mdb
 
-DATABASEPASSWORD = "password"
+# Check for user imports
+try:
+        import conflocal as config
+except ImportError:
+        import config
+
 
 def  BarometerLightningGraph(source,days,delay):
 
@@ -46,7 +51,7 @@ def  BarometerLightningGraph(source,days,delay):
 
 	try:
 		print("trying database")
-    		db = mdb.connect('localhost', 'root', DATABASEPASSWORD, 'GroveWeatherPi');
+    		db = mdb.connect('localhost', 'root', config.MySQL_Password, 'GroveWeatherPi');
 
     		cursor = db.cursor()
 

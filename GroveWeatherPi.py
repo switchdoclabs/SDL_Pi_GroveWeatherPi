@@ -20,7 +20,6 @@ import os
 
 import sendemail
 import pclogging
-import MySQLdb as mdb
 
 
 sys.path.append('./SDL_Pi_SSD1306')
@@ -49,6 +48,8 @@ try:
 except ImportError:
 	import config
 
+if (config.enable_MySQL_Logging == True):
+	import MySQLdb as mdb
 
 
 ################
@@ -239,8 +240,8 @@ ds3231 = SDL_DS3231.SDL_DS3231(1, 0x68)
 
 try:
 
-        #comment out the next line after the clock has been initialized
-        #ds3231.write_now()
+        
+        ds3231.write_now()
         ds3231.read_datetime()
         #print "DS3231=\t\t%s" % ds3231.read_datetime()
         config.DS3231_Present = True
@@ -718,8 +719,9 @@ def sampleWeather():
  		currentWindSpeed = weatherStation.current_wind_speed()
   		currentWindGust = weatherStation.get_wind_gust()
   		totalRain = totalRain + weatherStation.get_current_rain_total()
-		currentWindDirection = weatherStation.current_wind_direction()
-		currentWindDirectionVoltage = weatherStation.current_wind_direction_voltage()
+		if ((config.ADS1015_Present == True) or (config.ADS1115_Present == True)):
+			currentWindDirection = weatherStation.current_wind_direction()
+			currentWindDirectionVoltage = weatherStation.current_wind_direction_voltage()
 	else:
 		# WXLink Data Gathering
 		returnList = readWXLink(block1, block2)
@@ -880,7 +882,7 @@ def sampleAndDisplay():
 
 	if (config.WXLink_Present == False):
 
- 		currentWindSpeed = weatherStation.current_wind_speed()
+		currentWindSpeed = weatherStation.current_wind_speed()
   		currentWindGust = weatherStation.get_wind_gust()
   		totalRain = totalRain + weatherStation.get_current_rain_total()
 
@@ -1140,11 +1142,12 @@ def writeWeatherRecord():
 	global HTUtemperature, HTUhumidity
 
 
+
 	# now we have the data, stuff it in the database
 
 	try:
 		print("trying database")
-    		con = mdb.connect('localhost', 'root', DATABASEPASSWORD, 'GroveWeatherPi');
+    		con = mdb.connect('localhost', 'root', config.MySQL_Password, 'GroveWeatherPi');
 
     		cur = con.cursor()
 		print "before query"
@@ -1179,7 +1182,7 @@ def writePowerRecord():
 
 	try:
 		print("trying database")
-    		con = mdb.connect('localhost', 'root', DATABASEPASSWORD, 'GroveWeatherPi');
+    		con = mdb.connect('localhost', 'root', config.MySQL_Password, 'GroveWeatherPi');
 
     		cur = con.cursor()
 		print "before query"
@@ -1274,10 +1277,12 @@ def WLAN_check():
         source http://www.raspberrypi.org/forums/viewtopic.php?t=54001&p=413095
         '''
 	global WLAN_check_flg
-        ping_ret = subprocess.call(['ping -c 2 -w 1 -q 192.168.1.1 |grep "1 received" > /dev/null 2> /dev/null'], shell=True)
 
-	print "checking WLAN:  ping_ret=%i WLAN_check_flg=%i" % (ping_ret, WLAN_check_flg)
-	if ping_ret:
+        if (config.enable_WLAN_Detection == True):
+          ping_ret = subprocess.call(['ping -c 2 -w 1 -q '+config.PingableRouterAddress+' |grep "1 received" > /dev/null 2> /dev/null'], shell=True)
+
+	  print "checking WLAN:  ping_ret=%i WLAN_check_flg=%i" % (ping_ret, WLAN_check_flg)
+	  if ping_ret:
             # we lost the WLAN connection.
             # did we try a recovery already?
             if (WLAN_check_flg>2):
@@ -1299,11 +1304,15 @@ def WLAN_check():
    		pclogging.log(pclogging.WARNING, __name__, "WLAN Down, Pi is resetting WLAN connection" )
                 WLAN_check_flg = WLAN_check_flg + 1 # try to recover
                 subprocess.call(['sudo /sbin/ifdown wlan0 && sleep 10 && sudo /sbin/ifup --force wlan0'], shell=True)
-        else:
+          else:
             WLAN_check_flg = 0
 	    print "WLAN is OK"
 
-
+        else:    
+	    # enable_WLAN_Detection is off
+            WLAN_check_flg = 0
+	    print "WLAN Detection is OFF"
+            
 
 
 print ""
@@ -1329,7 +1338,12 @@ print returnStatusLine("SunAirPlus",config.SunAirPlus_Present)
 print returnStatusLine("WXLink",config.WXLink_Present)
 print "----------------------"
 
-DATABASEPASSWORD = "password"
+
+
+# initialize appropriate weather variables
+currentWindDirection = 0
+currentWindDirectionVoltage = 0.0
+
 pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.0")
 
 sendemail.sendEmail("test", "GroveWeatherPi Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
@@ -1390,8 +1404,9 @@ while True:
 		# print every 300 seconds
                 sampleWeather()
                 sampleSunAirPlus()
-		writeWeatherRecord()
-		writePowerRecord()
+		if (config.enable_MySQL_Logging == True):
+			writeWeatherRecord()
+			writePowerRecord()
 
 		if (batteryVoltage < 3.5):
 			print "--->>>>Time to Shutdown<<<<---"

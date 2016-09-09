@@ -18,12 +18,20 @@ NOTSET=0
 
 import sys
 import time
-import MySQLdb as mdb
+# Check for user imports
+try:
+        import conflocal as config
+except ImportError:
+        import config
 
-DATABASEPASSWORD = "password"
+if (config.enable_MySQL_Logging == True):
+	import MySQLdb as mdb
+
 
 def log(level, source, message):
 
+
+ if (config.enable_MySQL_Logging == True):	
    LOWESTDEBUG = 0
 	# open mysql database
 
@@ -39,7 +47,7 @@ def log(level, source, message):
         try:
 	
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', DATABASEPASSWORD, 'GroveWeatherPi');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'GroveWeatherPi');
 
                 cur = con.cursor()
                 #print "before query"

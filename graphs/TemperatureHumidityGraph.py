@@ -24,8 +24,13 @@ import pylab
 
 import MySQLdb as mdb
 
+# Check for user imports
+try:
+        import conflocal as config
+except ImportError:
+        import config
 
-DATABASEPASSWORD = "password"
+
 
 def  TemperatureHumidityGraph(source,days,delay):
 
@@ -47,7 +52,7 @@ def  TemperatureHumidityGraph(source,days,delay):
 
 	try:
 		print("trying database")
-    		db = mdb.connect('localhost', 'root', DATABASEPASSWORD, 'GroveWeatherPi');
+    		db = mdb.connect('localhost', 'root', config.MySQL_Password, 'GroveWeatherPi');
 
     		cursor = db.cursor()
 

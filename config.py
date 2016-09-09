@@ -12,6 +12,16 @@ notifyAddress ="you@example.com"
 
 fromAddress = "yourfromaddress@example.com"
 
+#MySQL Logging and Password Information
+
+enable_MySQL_Logging = True
+MySQL_Password = "password"
+
+# modify this IP to enable WLAN operating detection  - search for WLAN_check in GroveWeatherPi.py
+enable_WLAN_Detection = True
+PingableRouterAddress = "192.168.1.1"
+
+
 # device present global variables
 
 Lightning_Mode = False
