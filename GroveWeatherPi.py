@@ -1462,9 +1462,9 @@ while True:
 
 	# every 30 minutes, check wifi connections 
 
-	#if ((secondCount % (30*60)) == 0):
-	if ((secondCount % (30)) == 0):
-		# print every 900 seconds
+	if ((secondCount % (30*60)) == 0):
+	#if ((secondCount % (30)) == 0):
+		# print every 1800 seconds
     		WLAN_check()
 
     	#WLAN_check()
