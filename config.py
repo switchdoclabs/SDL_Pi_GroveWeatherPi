@@ -21,6 +21,14 @@ MySQL_Password = "password"
 enable_WLAN_Detection = True
 PingableRouterAddress = "192.168.1.1"
 
+# WeatherUnderground Station
+
+WeatherUnderground_Present = False
+WeatherUnderground_StationID = "KWXXXXX"
+WeatherUnderground_StationKey = "YYYYYYY"
+
+
+
 
 # device present global variables
 

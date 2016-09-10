@@ -1,7 +1,7 @@
-
+#
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.1 August 18, 2016 
+# Version 2.2 September 9, 2016 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -95,6 +95,7 @@ import Adafruit_SSD1306
 
 import Scroll_SSD1306
 
+import WeatherUnderground
 
 def returnStatusLine(device, state):
 
@@ -696,7 +697,7 @@ def sampleWeather():
     	global outsideTemperature, outsideHumidity, crc_check 
 	global currentWindDirection, currentWindDirectionVoltage
 
-	global HTUtemperature, HTUhumidity
+	global HTUtemperature, HTUhumidity, rain60Minutes
 
 	global block1, block2
 
@@ -806,6 +807,11 @@ def sampleWeather():
 
 
     		outsideTemperature, outsideHumidity, crc_check = am2315.sense()
+		
+	if (config.WeatherUnderground_Present == True):
+		print "--Sending Data to WeatherUnderground--"
+		WeatherUnderground.sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus, currentWindSpeed, currentWindGust, totalRain, bmp180Temperature, bmp180Pressure, bmp180Altitude,  bmp180SeaLevel, outsideTemperature, outsideHumidity, crc_check, currentWindDirection, currentWindDirectionVoltage, HTUtemperature, HTUhumidity, rain60Minutes )
+
 
 
 def sampleSunAirPlus():
@@ -1312,11 +1318,31 @@ def WLAN_check():
 	    # enable_WLAN_Detection is off
             WLAN_check_flg = 0
 	    print "WLAN Detection is OFF"
-            
 
+
+#Rain calculations
+
+rainArray = []
+for i in range(20):
+	rainArray.append(0)
+
+lastRainReading = 0.0
+
+def addRainToArray(plusRain):
+	global rainArray
+	del rainArray[0]
+	rainArray.append(plusRain)
+	#print "rainArray=", rainArray
+
+def totalRainArray():
+	global rainArray
+	total = 0
+	for i in range(20):
+		total = total+rainArray[i]
+	return total
 
 print ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.0 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.2 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1336,13 +1362,20 @@ print returnStatusLine("AS3935",config.AS3935_Present)
 print returnStatusLine("OLED",config.OLED_Present)
 print returnStatusLine("SunAirPlus",config.SunAirPlus_Present)
 print returnStatusLine("WXLink",config.WXLink_Present)
+print
+print returnStatusLine("UseMySQL",config.enable_MySQL_Logging)
+print returnStatusLine("Check WLAN",config.enable_WLAN_Detection)
+print returnStatusLine("WeatherUnderground",config.WeatherUnderground_Present)
 print "----------------------"
+
+
 
 
 
 # initialize appropriate weather variables
 currentWindDirection = 0
 currentWindDirectionVoltage = 0.0
+rain60Minutes = 0.0
 
 pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.0")
 
@@ -1396,7 +1429,6 @@ while True:
 
 
 
-
 	# every 5 minutes, push data to mysql and check for shutdown
 
 
@@ -1407,6 +1439,13 @@ while True:
 		if (config.enable_MySQL_Logging == True):
 			writeWeatherRecord()
 			writePowerRecord()
+
+	
+		addRainToArray(totalRain - lastRainReading)	
+		rain60Minutes = totalRainArray()
+		lastRainReading = totalRain
+		print "rain in past 60 minute=",rain60Minutes
+
 
 		if (batteryVoltage < 3.5):
 			print "--->>>>Time to Shutdown<<<<---"
