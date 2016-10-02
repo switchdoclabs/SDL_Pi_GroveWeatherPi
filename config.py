@@ -29,6 +29,9 @@ WeatherUnderground_StationKey = "YYYYYYY"
 
 
 
+# for barometeric pressure - needed to calculate sealevel equivalent - set your weatherstation elevation here
+
+BMP280_Altitude_Meters = 648.0
 
 # device present global variables
 

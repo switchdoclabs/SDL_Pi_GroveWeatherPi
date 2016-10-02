@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.2 
+Version 2.3 
 
 http://www.switchdoc.com/
+
+October 3, 2016 - Added CRC Check to WXLink support, changed Barometric report on WU to Sea Level, added Altitude configuration in confif.py
 
 September 9, 2016 - Added WeatherUnderground Support - see Blog article on www.switchdoc.com for instructions.   The summary of the instructions are:
 
@@ -42,7 +44,7 @@ sudo pip install tentacle_pi
 SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on:
 
 -----------
-setup your configuration variables in config.py
+setup your configuration variables in config.py!
 -----------
 
 --------

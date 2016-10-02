@@ -46,7 +46,7 @@ def sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrup
 	myURL += "&software=GroveWeatherPi"
 	
 
-	#print "myURL=", myURL
+	print "myURL=", myURL
 	#send it
 	conn = httplib.HTTPConnection("weatherstation.wunderground.com")
 	conn.request("GET",myURL)
