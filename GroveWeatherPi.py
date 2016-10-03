@@ -568,6 +568,8 @@ def readWXLink(block1, block2):
                         block1 = WXLink.read_i2c_block_data(0x08, 0);
 			print "block1=", block1
                         block2 = WXLink.read_i2c_block_data(0x08, 1);
+			block1_orig = block1
+			block2_orig = block2
 			print "block2=", block2
                         stringblock1 = ''.join(chr(e) for e in block1)
                         stringblock2 = ''.join(chr(e) for e in block2[0:27]) 
@@ -584,7 +586,20 @@ def readWXLink(block1, block2):
                         print "WXLink Read failed - Old Data Kept"
                         block1 = oldblock1
                         block2 = oldblock2
+			block1_orig = block1
+			block2_orig = block2
 			print "b1, b2=", block1, block2
+                        stringblock1 = ''.join(chr(e) for e in block1)
+                        stringblock2 = ''.join(chr(e) for e in block2[0:27]) 
+
+                	print "-----------"
+                	print "block 1"
+                	print ''.join('{:02x}'.format(x) for x in block1)
+                	block1 = bytearray(block1)
+                	print "block 2"
+                	block2 = bytearray(block2)
+                	print ''.join('{:02x}'.format(x) for x in block2)
+                	print "-----------"
 
 		if ((len(block1) > 0) and (len(block2) > 0)):
 			# check crc for errors - don't update data if crc is bad
@@ -657,8 +672,8 @@ def readWXLink(block1, block2):
 	
 		# return list
 		returnList = []
-		returnList.append(block1) 
-		returnList.append(block2) 
+		returnList.append(block1_orig) 
+		returnList.append(block2_orig) 
 		returnList.append(currentWindSpeed) 
 		returnList.append(currentWindGust) 
 		returnList.append(totalRain) 
@@ -758,7 +773,10 @@ def sampleWeather():
 		returnList = readWXLink(block1, block2)
  	
 		if (len(returnList) > 0):		
-			
+		
+			block1 = returnList[0]
+			block2 = returnList[1]
+	
 			currentWindSpeed = returnList[2]
   			currentWindGust = 0.0 # not supported
   			totalRain = returnList[4]
@@ -939,6 +957,10 @@ def sampleAndDisplay():
 		returnList = readWXLink(block1, block2)
 	
 		if (len(returnList) > 0):	
+		
+			block1 = returnList[0]
+			block2 = returnList[1]
+	
 			currentWindSpeed = returnList[2]
   			currentWindGust = 0.0 # not supported
   			totalRain = returnList[4]
