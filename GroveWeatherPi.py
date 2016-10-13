@@ -79,6 +79,9 @@ config.OLED_Present = False
 config.WXLink_Present = False
 
 
+# if the WXLink has stopped transmitting, == False
+config.WXLink_Data_Fresh = False
+config.WXLink_LastMessageID = 0
 
 
 import SDL_Pi_INA3221
@@ -563,6 +566,7 @@ def readWXLink(block1, block2):
 
                 oldblock1 = block1
                 oldblock2 = block2
+
                 try:
                 	print "-----------"
                         block1 = WXLink.read_i2c_block_data(0x08, 0);
@@ -634,7 +638,8 @@ def readWXLink(block1, block2):
 		
                 		# now do the AM2315 Temperature
                 		temperature = struct.unpack('f', str(block1[25:29]))[0]
-                		elements = [block1[29], block1[30], block1[31], block2[0]]
+                	        print "OTFloat=%x%x%x%x" %(block1[25], block1[26], block1[27], block1[28])
+				elements = [block1[29], block1[30], block1[31], block2[0]]
                 		outHByte = bytearray(elements)
                 		humidity = struct.unpack('f', str(outHByte))[0]
                 		print "AM2315 from WXLink temperature: %0.1fC" % temperature
@@ -663,6 +668,12 @@ def readWXLink(block1, block2):
                 		# message ID
                 		MessageID = struct.unpack('l', str(block2[25:29]))[0]
                 		print "WXLink Message ID %i" % MessageID
+
+				if (config.WXLink_LastMessageID != MessageID):
+					config.WXLink_Data_Fresh = True
+					config.WXLink_LastMessageID = MessageID
+					print "WXLink_Data_Fresh set to True"
+
 			else:
 				print "Bad CRC Received"
 				return []
@@ -686,6 +697,7 @@ def readWXLink(block1, block2):
 		returnList.append(solarPanelVoltage) 
 		returnList.append(solarPanelCurrent) 
 		returnList.append(auxA) 
+		returnList.append(MessageID) 
 
 		return returnList
 
@@ -785,6 +797,8 @@ def sampleWeather():
 
     			outsideTemperature = returnList[6]
     			outsideHumidity = returnList[7]
+
+
 		else:
 			# checks for issue on startup
 			if ((len(block1) == 0) or (len(block2) == 0)):
@@ -862,10 +876,29 @@ def sampleWeather():
     		outsideTemperature, outsideHumidity, crc_check = am2315.sense()
 		
 	if (config.WeatherUnderground_Present == True):
-		print "--Sending Data to WeatherUnderground--"
-		WeatherUnderground.sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus, currentWindSpeed, currentWindGust, totalRain, bmp180Temperature, bmp180SeaLevel, bmp180Altitude,  bmp180SeaLevel, outsideTemperature, outsideHumidity, crc_check, currentWindDirection, currentWindDirectionVoltage, HTUtemperature, HTUhumidity, rain60Minutes )
 
+		if (config.WXLink_Present):
+			if (config.WXLink_Data_Fresh):
+				# continue with send to WeatherUnderground
+				print "WXLink_Data fresh and present"
+			else:
+				# data is not fresh, so don't send to WeatherUnderground
+				print "WXLink_Data Stale don't send to WeatherUnderground"
+				return
 
+		# always set message stale set to False since we have consumed it
+		config.WXLink_Data_Fresh = False
+
+		try:
+			print "--Sending Data to WeatherUnderground--"
+			WeatherUnderground.sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus, currentWindSpeed, currentWindGust, totalRain, bmp180Temperature, bmp180SeaLevel, bmp180Altitude,  bmp180SeaLevel, outsideTemperature, outsideHumidity, crc_check, currentWindDirection, currentWindDirectionVoltage, HTUtemperature, HTUhumidity, rain60Minutes )
+		except:
+			print "--WeatherUnderground Data Send Failed"
+
+	else:
+		# set the Data to stale  
+		config.WXLink_Data_Fresh = False
+		
 
 def sampleSunAirPlus():
 
