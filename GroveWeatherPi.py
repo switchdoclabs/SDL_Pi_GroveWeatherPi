@@ -620,6 +620,10 @@ def readWXLink(block1, block2):
 			
 			print "calculatedCRC = %x " % calculatedCRC 
 
+			# check for start bytes, if not present, then invalidate CRC
+
+			if (block1[0] != 0xAB) or (block1[1] != 0x66):
+				calculatedCRC = receivedCRC + 1
 
 			if (receivedCRC == calculatedCRC):
 				print "Good CRC Recived"
