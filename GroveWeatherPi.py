@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.3 October 3, 2016 
+# Version 2.4 October 24, 2016 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
