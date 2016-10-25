@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS `PowerSystem` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `Sunlight`
+--
+
+CREATE TABLE IF NOT EXISTS `Sunlight` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TimeStamp` datetime NOT NULL,
+  `Visible` int(11) NOT NULL,
+  `IR` int(250) NOT NULL,
+  `UV` int(250) NOT NULL,
+  `UVIndex` float NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+--
 -- Table structure for table `systemlog`
 --
 

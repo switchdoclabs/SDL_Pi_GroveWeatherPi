@@ -32,6 +32,7 @@ sys.path.append('./SDL_Pi_FRAM')
 sys.path.append('./RaspberryPi-AS3935/RPi_AS3935')
 sys.path.append('./SDL_Pi_INA3221')
 sys.path.append('./SDL_Pi_TCA9545')
+sys.path.append('./SDL_Pi_SI1145')
 sys.path.append('./graphs')
 
 import subprocess
@@ -77,6 +78,7 @@ config.ADS1015_Present = False
 config.ADS1115_Present = False
 config.OLED_Present = False
 config.WXLink_Present = False
+config.Sunlight_Present = False
 
 
 # if the WXLink has stopped transmitting, == False
@@ -99,6 +101,8 @@ import Adafruit_SSD1306
 import Scroll_SSD1306
 
 import WeatherUnderground
+
+import SDL_Pi_SI1145
 
 def returnStatusLine(device, state):
 
@@ -229,6 +233,24 @@ except:
 
 block1 = ""
 block2 = ""
+
+###############
+
+# Sunlight SI1145 Sensor Setup
+
+################
+# turn I2CBus 3 on
+if (config.TCA9545_I2CMux_Present):
+	 tca9545.write_control_register(TCA9545_CONFIG_BUS3)
+
+Sunlight_Sensor = SDL_Pi_SI1145.SDL_Pi_SI1145()
+
+try:
+        visible = Sunlight_Sensor.readVisible() 
+        config.Sunlight_Present = True
+except:
+        config.Sunlight_Present = False
+
 
 ################
 # DS3231/AT24C32 Setup
@@ -758,6 +780,8 @@ def sampleWeather():
     	global outsideTemperature, outsideHumidity, crc_check 
 	global currentWindDirection, currentWindDirectionVoltage
 
+        global	SunlightVisible, SunlightIR, SunlightUV,  SunlightUVIndex 
+
 	global HTUtemperature, HTUhumidity, rain60Minutes
 
 	global block1, block2
@@ -821,13 +845,6 @@ def sampleWeather():
 		
         print "----------------- "
 
-	if (config.SunAirPlus_Present):
-        
-		# turn I2CBus 2 on
- 		tca9545.write_control_register(TCA9545_CONFIG_BUS2)
-
-		print "----------------- "
-		print "----------------- "
   
 	if (config.BMP280_Present):	
 		bmp180Temperature = bmp280.read_temperature()
@@ -848,6 +865,29 @@ def sampleWeather():
 	else:
 		HTUtemperature = 0.0
 		HTUhumidity = 0.0
+
+	if (config.Sunlight_Present):
+		################
+		# turn I2CBus 3 on
+		if (config.TCA9545_I2CMux_Present):
+	 		tca9545.write_control_register(TCA9545_CONFIG_BUS3)
+
+        	SunlightVisible = Sunlight_Sensor.readVisible()
+        	SunlightIR = Sunlight_Sensor.readIR()
+        	SunlightUV = Sunlight_Sensor.readUV()
+        	SunlightUVIndex = SunlightUV / 100.0
+		################
+		# turn I2CBus 0 on
+		if (config.TCA9545_I2CMux_Present):
+	 		tca9545.write_control_register(TCA9545_CONFIG_BUS0)
+
+	else:
+        	SunlightVisible = 0
+        	SunlightIR = 0 
+        	SunlightUV = 0
+        	SunlightUVIndex = 0.0
+
+
 
 	if (as3935LastInterrupt == 0x00):
 		as3935InterruptStatus = "----No Lightning detected---"
@@ -895,7 +935,7 @@ def sampleWeather():
 
 		try:
 			print "--Sending Data to WeatherUnderground--"
-			WeatherUnderground.sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus, currentWindSpeed, currentWindGust, totalRain, bmp180Temperature, bmp180SeaLevel, bmp180Altitude,  bmp180SeaLevel, outsideTemperature, outsideHumidity, crc_check, currentWindDirection, currentWindDirectionVoltage, HTUtemperature, HTUhumidity, rain60Minutes )
+			WeatherUnderground.sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus, currentWindSpeed, currentWindGust, totalRain, bmp180Temperature, bmp180SeaLevel, bmp180Altitude,  bmp180SeaLevel, outsideTemperature, outsideHumidity, crc_check, currentWindDirection, currentWindDirectionVoltage, HTUtemperature, HTUhumidity, rain60Minutes)
 		except:
 			print "--WeatherUnderground Data Send Failed"
 
@@ -965,6 +1005,8 @@ def sampleAndDisplay():
         global currentWindDirection, currentWindDirectionVoltage
 
         global HTUtemperature, HTUhumidity
+
+        global	SunlightVisible, SunlightIR, SunlightUV,  SunlightUVIndex 
 
 	global totalRain, as3935LightningCount
     	global as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus
@@ -1089,6 +1131,34 @@ def sampleAndDisplay():
 		print 'Altitude = \t{0:0.2f} m'.format(bmp280.read_altitude())
 		print 'Sealevel Pressure = \t{0:0.2f} KPa'.format(bmp280.read_sealevel_pressure(config.BMP280_Altitude_Meters)/1000)
 		print "----------------- "
+
+
+        print "----------------- "
+        if (config.Sunlight_Present == True):
+                print " Sunlight Vi/IR/UV Sensor"
+        else:
+                print " Sunlight Vi/IR/UV Sensor Not Present"
+        print "----------------- "
+
+	if (config.Sunlight_Present == True):
+		################
+		# turn I2CBus 3 on
+		if (config.TCA9545_I2CMux_Present):
+	 		tca9545.write_control_register(TCA9545_CONFIG_BUS3)
+
+
+        	SunlightVisible = Sunlight_Sensor.readVisible()
+        	SunlightIR = Sunlight_Sensor.readIR()
+        	SunlightUV = Sunlight_Sensor.readUV()
+        	SunlightUVIndex = SunlightUV / 100.0
+        	print 'Sunlight Visible:  ' + str(SunlightVisible)
+        	print 'Sunlight IR:       ' + str(SunlightIR)
+        	print 'Sunlight UV Index: ' + str(SunlightUVIndex)
+		################
+		# turn I2CBus 0 on
+		if (config.TCA9545_I2CMux_Present):
+	 		tca9545.write_control_register(TCA9545_CONFIG_BUS0)
+
 
 
         print "----------------- "
@@ -1249,6 +1319,8 @@ def writeWeatherRecord():
     	global outsideTemperature, outsideHumidity, crc_check 
 	global currentWindDirection, currentWindDirectionVoltage
 
+        global	SunlightVisible, SunlightIR, SunlightUV,  SunlightUVIndex 
+
 	global HTUtemperature, HTUhumidity
 
 
@@ -1266,6 +1338,15 @@ def writeWeatherRecord():
 		print("query=%s" % query)
 
 		cur.execute(query)
+
+
+		# now check for Sunlight Sensor
+		if (config.Sunlight_Present):
+
+			query = 'INSERT INTO Sunlight(TimeStamp, Visible, IR, UV, UVIndex) VALUES(UTC_TIMESTAMP(), %d, %d, %d, %.3f)' % (SunlightVisible, SunlightIR, SunlightUV, SunlightUVIndex)
+			print("query=%s" % query)
+			cur.execute(query)
+
 	
 		con.commit()
 		
@@ -1465,6 +1546,7 @@ print returnStatusLine("ADS1115",config.ADS1115_Present)
 print returnStatusLine("AS3935",config.AS3935_Present)
 print returnStatusLine("OLED",config.OLED_Present)
 print returnStatusLine("SunAirPlus",config.SunAirPlus_Present)
+print returnStatusLine("Sunlight Sensor",config.Sunlight_Present)
 print returnStatusLine("WXLink",config.WXLink_Present)
 print
 print returnStatusLine("UseMySQL",config.enable_MySQL_Logging)

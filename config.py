@@ -50,6 +50,7 @@ ADS1015_Present = False
 ADS1115_Present = False
 OLED_Present = False
 WXLink_Present = False
+Sunlight_Preset = False
 
 # if the WXLink has stopped transmitting, == False
 WXLink_Data_Fresh = False

@@ -6,6 +6,8 @@ Version 2.4
 
 http://www.switchdoc.com/
 
+October 26, 2016 - Support added for Grove Sunlight/IR/UV SI1145 sensor
+
 October 24, 2016 -  Improved WXLink Error Checking
 
 October 3, 2016 - Added CRC Check to WXLink support, changed Barometric report on WU to Sea Level, added Altitude configuration in confif.py
@@ -43,7 +45,14 @@ sudo apt-get install python-pip
 sudo apt-get install libi2c-dev
 sudo pip install tentacle_pi
 
-SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on:
+SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on: store.switchdoc.com
+
+Read the GroveWeatherPi Instructable on instructables.com for more software installation instructions 
+
+or
+
+Read the tutorial on GroveWeatherPi on http://www.switchdoc.com/2016/08/tutorial-part-1-building-a-solar-powered-raspberry-pi-weather-station-groveweatherpi/
+for more software installation instructions.
 
 -----------
 setup your configuration variables in config.py!
@@ -55,9 +64,10 @@ Add SQL instructions
 
 Use phpmyadmin or sql command lines to add the included SQL file to your MySQL databases.
 
-example:   mysql -u root -p < WeatherPiStructure.sql
+example:   mysql -u root -p GroveWeatherPi< GroveWeatherPi.sql
 
 user:  root
+
 password: password
 
 Obviously with these credentials, don't connect port 3306 to the Internet.   Change them if you aren't sure.
