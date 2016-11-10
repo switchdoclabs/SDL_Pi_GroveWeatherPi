@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.4 October 24, 2016 
+# Version 2.5 November 10, 2016 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -223,11 +223,30 @@ weatherStation.setWindMode(SDL_MODE_SAMPLE, 5.0)
 ################
 
 # WXLink Test Setup
+WXLinkResetPin = 12
+
+def resetWXLink():
+	
+	print "WXLink Reset"
+        pclogging.log(pclogging.INFO, __name__, "WXLink RX Reset" )
+	# Reset is connected to D12 on the Pi2Grover	
+        
+        GPIO.setup(WXLinkResetPin, GPIO.OUT)
+        GPIO.output(WXLinkResetPin, False)
+        time.sleep(0.2)
+        GPIO.output(WXLinkResetPin, True)
+        GPIO.setup(WXLinkResetPin, GPIO.IN)
+ 	time.sleep(2.0)		
+
+resetWXLink()
 
 WXLink = smbus.SMBus(1)
 try:
-        data1 = WXLink.read_i2c_block_data(0x08, 0);
+        data1 = WXLink.read_i2c_block_data(0x08, 0)
         config.WXLink_Present = True
+
+	# OK, now export i2c to so we can determine if we need to reset WXLink
+   	os.system("echo '3' > /sys/class/gpio/export")
 except:
         config.WXLink_Present = False
 
@@ -243,9 +262,9 @@ block2 = ""
 if (config.TCA9545_I2CMux_Present):
 	 tca9545.write_control_register(TCA9545_CONFIG_BUS3)
 
-Sunlight_Sensor = SDL_Pi_SI1145.SDL_Pi_SI1145()
-
+Sunlight_Sensor = None
 try:
+	Sunlight_Sensor = SDL_Pi_SI1145.SDL_Pi_SI1145()
         visible = Sunlight_Sensor.readVisible() 
         config.Sunlight_Present = True
 except:
@@ -584,6 +603,8 @@ import crcpython2
 # read WXLink and return list to set variables
 crcCalc = crcpython2.CRCCCITT(version='XModem')
 
+
+
 def readWXLink(block1, block2):
 
                 oldblock1 = block1
@@ -810,7 +831,20 @@ def sampleWeather():
 			currentWindDirectionVoltage = weatherStation.current_wind_direction_voltage()
 	else:
 		# WXLink Data Gathering
-		returnList = readWXLink(block1, block2)
+		try:
+			returnList = readWXLink(block1, block2)
+			# check for locked I2C and if is, then reset WXLink
+
+  			with open("/sys/class/gpio/gpio3/value") as pin:
+    				status = pin.read(1)
+      				print("SCL= %s" % (status))
+				if (status == "0"):
+					resetWXLink()
+					returnList = []
+		except:
+        		print("Unexpected error:", sys.exc_info()[0])
+  			print "Remember to export the pin first!"
+  			status = "Unknown"
  	
 		if (len(returnList) > 0):		
 		
@@ -847,10 +881,13 @@ def sampleWeather():
 
   
 	if (config.BMP280_Present):	
-		bmp180Temperature = bmp280.read_temperature()
-		bmp180Pressure = bmp280.read_pressure()/1000
-		bmp180Altitude = bmp280.read_altitude()
-		bmp180SeaLevel = bmp280.read_sealevel_pressure(config.BMP280_Altitude_Meters)/1000
+		try:
+			bmp180Temperature = bmp280.read_temperature()
+			bmp180Pressure = bmp280.read_pressure()/1000
+			bmp180Altitude = bmp280.read_altitude()
+			bmp180SeaLevel = bmp280.read_sealevel_pressure(config.BMP280_Altitude_Meters)/1000
+		except:
+        		print("Unexpected error:", sys.exc_info()[0])
 
 
 
@@ -1033,8 +1070,23 @@ def sampleAndDisplay():
 
 	else:
 		# WXLink Data Gathering
-		returnList = readWXLink(block1, block2)
-	
+		# check for locked I2C and if is, then reset WXLink
+
+		try:
+			returnList = readWXLink(block1, block2)
+  			with open("/sys/class/gpio/gpio3/value") as pin:
+    				status = pin.read(1)
+      				print("SCL= %s" % (status))
+				if (status == "0"):
+					resetWXLink()
+					returnList = []
+		except:
+        		print("Unexpected error:", sys.exc_info()[0])
+  			print "Remember to export the pin first!"
+  			status = "Unknown"
+
+
+
 		if (len(returnList) > 0):	
 		
 			block1 = returnList[0]
@@ -1126,11 +1178,14 @@ def sampleAndDisplay():
         print "----------------- "
 
 	if (config.BMP280_Present):
-		print 'Temperature = \t{0:0.2f} C'.format(bmp280.read_temperature())
-		print 'Pressure = \t{0:0.2f} KPa'.format(bmp280.read_pressure()/1000)
-		print 'Altitude = \t{0:0.2f} m'.format(bmp280.read_altitude())
-		print 'Sealevel Pressure = \t{0:0.2f} KPa'.format(bmp280.read_sealevel_pressure(config.BMP280_Altitude_Meters)/1000)
-		print "----------------- "
+		try:
+			print 'Temperature = \t{0:0.2f} C'.format(bmp280.read_temperature())
+			print 'Pressure = \t{0:0.2f} KPa'.format(bmp280.read_pressure()/1000)
+			print 'Altitude = \t{0:0.2f} m'.format(bmp280.read_altitude())
+			print 'Sealevel Pressure = \t{0:0.2f} KPa'.format(bmp280.read_sealevel_pressure(config.BMP280_Altitude_Meters)/1000)
+			print "----------------- "
+		except:
+        		print("Unexpected error:", sys.exc_info()[0])
 
 
         print "----------------- "
@@ -1527,7 +1582,7 @@ def totalRainArray():
 	return total
 
 print ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.3 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.5 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
