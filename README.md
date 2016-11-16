@@ -2,11 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.4 
+Version 2.5 
 
 http://www.switchdoc.com/
 
-October 26, 2016 - Support added for Grove Sunlight/IR/UV SI1145 sensor
+October 26, 2016 - Support added for Grove Sunlight/IR/UV SI1145 sensor.   Database updated.  Run mysql as below
 
 October 24, 2016 -  Improved WXLink Error Checking
 
@@ -38,11 +38,18 @@ Install this for smbus:
 
 sudo apt-get install python-smbus
 
+If using the Grove Sunlight Sensor do this:
+
+git clone https://github.com/adafruit/Adafruit_Python_PureIO.git<BR>
+cd Adafruit_Python_PureIO<BR>
+sudo python setup.py install<BR>
 
 Other installations required for AM2315:
 
 sudo apt-get install python-pip
+
 sudo apt-get install libi2c-dev
+
 sudo pip install tentacle_pi
 
 SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on: store.switchdoc.com
@@ -62,7 +69,9 @@ setup your configuration variables in config.py!
 Add SQL instructions
 ----------
 
-Use phpmyadmin or sql command lines to add the included SQL file to your MySQL databases.
+Use phpmyadmin or sql command lines to add the included SQL file to your MySQL databases.<BR>
+Note:  If the database has been updated, run the example below to update your database.   The current contents will not be lost.
+
 
 example:   mysql -u root -p GroveWeatherPi< GroveWeatherPi.sql
 
