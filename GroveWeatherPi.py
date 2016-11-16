@@ -263,11 +263,8 @@ if (config.TCA9545_I2CMux_Present):
 	 tca9545.write_control_register(TCA9545_CONFIG_BUS3)
 
 try:
-	print "1"
 	Sunlight_Sensor = SDL_Pi_SI1145.SDL_Pi_SI1145()
-	print "2"
         visible = Sunlight_Sensor.readVisible() 
-	print "3"
         config.Sunlight_Present = True
 except:
         config.Sunlight_Present = False
