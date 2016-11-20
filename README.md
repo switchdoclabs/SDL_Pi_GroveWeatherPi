@@ -52,6 +52,16 @@ sudo apt-get install libi2c-dev
 
 sudo pip install tentacle_pi
 
+----------------
+Note some configurations of Raspberry Pi software requres the following:
+----------------
+<pre>
+sudo apt-get update
+sudo apt-get install build-essential python-pip python-dev python-smbus git
+git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
+cd Adafruit_Python_GPIO
+sudo python setup.py install
+</pre>
 SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on: store.switchdoc.com
 
 Read the GroveWeatherPi Instructable on instructables.com for more software installation instructions 
