@@ -34,9 +34,10 @@ def handle_interrupt(channel):
         print "It was " + str(distance) + "km away. (%s)" % now
         print ""
 
-pin = 25
+pin = 16
 
-GPIO.setup(pin, GPIO.IN)
+#GPIO.setup(pin, GPIO.IN )
+GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_UP )
 GPIO.add_event_detect(pin, GPIO.RISING, callback=handle_interrupt)
 
 print "Waiting for lightning - or at least something that looks like it"

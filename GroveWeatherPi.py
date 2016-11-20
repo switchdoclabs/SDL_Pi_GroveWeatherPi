@@ -391,10 +391,10 @@ def process_as3935_interrupt():
     as3935Interrupt = False
 
     print "processing Interrupt from as3935"
-    # turn I2CBus 2 on
+    # turn I2CBus 1 on
     if (config.TCA9545_I2CMux_Present):
          tca9545.write_control_register(TCA9545_CONFIG_BUS1)
-    time.sleep(0.003)
+    time.sleep(0.020)
     reason = as3935.get_interrupt()
 
     as3935LastInterrupt = reason
@@ -413,7 +413,7 @@ def process_as3935_interrupt():
 	as3935LastDistance = distance
 	as3935LastStatus = "Lightning Detected "  + str(distance) + "km away. (%s)" % now
 	pclogging.log(pclogging.INFO, __name__, "Lightning Detected "  + str(distance) + "km away. (%s)" % now)
-	sendemail.sendEmail("test", "GroveWeatherPi Lightning Detected\n", as3935LastStatus, config.textnotifyAddress,  config.textfromAddress, "");
+	sendemail.sendEmail("test", "GroveWeatherPi Lightning Detected\n", as3935LastStatus, config.textnotifyAddress,  config.fromAddress, "");
     
     print "Last Interrupt = 0x%x:  %s" % (as3935LastInterrupt, as3935LastStatus)
     if (config.TCA9545_I2CMux_Present):
@@ -1619,7 +1619,7 @@ rain60Minutes = 0.0
 
 pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.0")
 
-sendemail.sendEmail("test", "GroveWeatherPi Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
+sendemail.sendEmail("test", "GroveWeatherPi 70 Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
 
 if (config.SunAirPlus_Present == False):
 

@@ -12,6 +12,8 @@ notifyAddress ="you@example.com"
 
 fromAddress = "yourfromaddress@example.com"
 
+textnotifyAddress = "yourphonenumber@yourprovider"
+
 #MySQL Logging and Password Information
 
 enable_MySQL_Logging = True
