@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.5 November 10, 2016 
+# Version 2.7 February 9, 2017 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -1581,7 +1581,7 @@ def totalRainArray():
 	return total
 
 print ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.5 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.7 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1617,9 +1617,9 @@ currentWindDirection = 0
 currentWindDirectionVoltage = 0.0
 rain60Minutes = 0.0
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.0")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.7")
 
-sendemail.sendEmail("test", "GroveWeatherPi 70 Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
+sendemail.sendEmail("test", "GroveWeatherPi Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
 
 if (config.SunAirPlus_Present == False):
 

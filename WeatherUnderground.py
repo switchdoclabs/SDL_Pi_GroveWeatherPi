@@ -34,6 +34,10 @@ def sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrup
 	myURL += "&humidity=%i" % outsideHumidity
 	myURL += "&tempf=%0.2f" % ((outsideTemperature*9.0/5.0)+32.0)
 
+   	dewpoint =  outsideTemperature - ((100.0 - outsideHumidity) / 5.0);
+	dewpointf = ((dewpoint*9.0/5.0)+32.0)
+	myURL += "&dewptf=%0.2f" % dewpointf 
+
 	myURL += "&rainin=%0.2f" % ((rain60Minutes)/25.4)
 	myURL += "&baromin=%0.2f" % ((bmp180SeaLevel) * 0.2953)
 
@@ -42,6 +46,7 @@ def sendWeatherUndergroundData( as3935LightningCount, as3935, as3935LastInterrup
 
 	myURL += "&software=GroveWeatherPi"
 	
+
 
 	print "myURL=", myURL
 	#send it
