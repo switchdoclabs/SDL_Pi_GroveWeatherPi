@@ -555,46 +555,47 @@ def processCommand():
 
 def returnPercentLeftInBattery(currentVoltage, maxVolt):
 
-	scaledVolts = currentVoltage / maxVolt
-	
-	if (scaledVolts > 1.0):
-		scaledVolts = 1.0
-	
-	
-	if (scaledVolts > .9686):
-		returnPercent = 10*(1-(1.0-scaledVolts)/(1.0-.9686))+90
-		return returnPercent
+        scaledVolts = currentVoltage / maxVolt
 
-	if (scaledVolts > 0.9374):
-		returnPercent = 10*(1-(0.9686-scaledVolts)/(0.9686-0.9374))+80
-		return returnPercent
+        if (scaledVolts > 1.0):
+                scaledVolts = 1.0
 
 
-	if (scaledVolts > 0.9063):
-		returnPercent = 30*(1-(0.9374-scaledVolts)/(0.9374-0.9063))+50
-		return returnPercent
+        if (scaledVolts > .9686):
+                returnPercent = 10*(1-(1.0-scaledVolts)/(1.0-.9686))+90
+                return returnPercent
 
-	if (scaledVolts > 0.8749):
-		returnPercent = 30*(1-(0.8749-scaledVolts)/(0.9063-0.8749))+20
-		return returnPercent
-
-	
-	if (scaledVolts > 0.8437):
-		returnPercent = 17*(1-(0.8437-scaledVolts)/(0.8749-0.8437))+3
-		return returnPercent
+        if (scaledVolts > 0.9374):
+                returnPercent = 10*(1-(0.9686-scaledVolts)/(0.9686-0.9374))+80
+                return returnPercent
 
 
-   	if (scaledVolts > 0.8126):
-		returnPercent = 1*(1-(0.8126-scaledVolts)/(0.8437-0.8126))+2
-		return returnPercent
+        if (scaledVolts > 0.9063):
+                returnPercent = 30*(1-(0.9374-scaledVolts)/(0.9374-0.9063))+50
+                return returnPercent
+
+        if (scaledVolts > 0.8749):
+                returnPercent = 20*(1-(0.8749-scaledVolts)/(0.9063-0.8749))+11
+
+                return returnPercent
+
+
+        if (scaledVolts > 0.8437):
+                returnPercent = 15*(1-(0.8437-scaledVolts)/(0.8749-0.8437))+1
+                return returnPercent
+
+
+        if (scaledVolts > 0.8126):
+                returnPercent = 7*(1-(0.8126-scaledVolts)/(0.8437-0.8126))+2
+                return returnPercent
 
 
 
-	if (scaledVolts > 0.7812):
-		returnPercent = 1*(1-(0.7812-scaledVolts)/(0.7812-0.8126))+1
-		return returnPercent
+        if (scaledVolts > 0.7812):
+                returnPercent = 4*(1-(0.7812-scaledVolts)/(0.8126-0.7812))+1
+                return returnPercent
 
-	return 0	
+        return 0
 
 
 import crcpython2
