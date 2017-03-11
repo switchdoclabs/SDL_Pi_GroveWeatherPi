@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.5 
+Version 2.8 
 
 http://www.switchdoc.com/
+
+March 9, 2017 - Added time based scheduler into the main loop instead of polling (APscheduler).  Added support for Grove HDC1000
 
 October 26, 2016 - Support added for Grove Sunlight/IR/UV SI1145 sensor.   Database updated.  Run mysql as below
 
@@ -51,6 +53,14 @@ sudo apt-get install python-pip
 sudo apt-get install libi2c-dev
 
 sudo pip install tentacle_pi
+
+#Installing apscheduler
+
+sudo pip install --upgrade setuptools pip <BR>
+
+sudo pip install setuptools --upgrade  <BR>
+sudo pip install apscheduler <BR>
+
 
 ----------------
 Note some configurations of Raspberry Pi software requres the following:

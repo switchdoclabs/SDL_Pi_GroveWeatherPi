@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.7 February 9, 2017 
+# Version 2.8 March 9, 2017
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -34,6 +34,8 @@ sys.path.append('./SDL_Pi_INA3221')
 sys.path.append('./SDL_Pi_TCA9545')
 sys.path.append('./SDL_Pi_SI1145')
 sys.path.append('./graphs')
+sys.path.append('./SDL_Pi_HDC1000')
+
 
 import subprocess
 import RPi.GPIO as GPIO
@@ -41,6 +43,13 @@ import doAllGraphs
 import smbus
 
 import struct
+
+import SDL_Pi_HDC1000
+
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
+import apscheduler.events
 
 
 # Check for user imports
@@ -103,6 +112,8 @@ import Scroll_SSD1306
 import WeatherUnderground
 
 import SDL_Pi_SI1145
+import SI1145Lux
+
 
 def returnStatusLine(device, state):
 
@@ -162,14 +173,16 @@ SOLAR_CELL_CHANNEL   = 2
 OUTPUT_CHANNEL       = 3
 
 try:
-         # switch to BUS2 -  SunAirPlus is on Bus2
-         tca9545.write_control_register(TCA9545_CONFIG_BUS2)
-         sunAirPlus = SDL_Pi_INA3221.SDL_Pi_INA3221(addr=0x40)
+	if (config.TCA9545_I2CMux_Present):
+         	# switch to BUS2 -  SunAirPlus is on Bus2
+         	tca9545.write_control_register(TCA9545_CONFIG_BUS2)
+        
+	sunAirPlus = SDL_Pi_INA3221.SDL_Pi_INA3221(addr=0x40)
 
-         busvoltage1 = sunAirPlus.getBusVoltage_V(LIPO_BATTERY_CHANNEL)
-         config.SunAirPlus_Present = True
+        busvoltage1 = sunAirPlus.getBusVoltage_V(LIPO_BATTERY_CHANNEL)
+        config.SunAirPlus_Present = True
 except:
-         config.SunAirPlus_Present = False
+        config.SunAirPlus_Present = False
 
 
 
@@ -182,12 +195,33 @@ SUNAIRLED = 25
 if (config.TCA9545_I2CMux_Present):
 	 tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 
-# HTU21DF Detection
+# Check for HDC1080 first (both are on 0x40)
+
+hdc1080 = SDL_Pi_HDC1000.SDL_Pi_HDC1000() 
+
+###############
+
+# HDC1080 Detection
 try:
-        HTU21DFOut = subprocess.check_output(["htu21dflib/htu21dflib","-l"])
-        config.HTU21DF_Present = True
+        deviceID = hdc1080.readDeviceID() 
+	#print "deviceID = 0x%X" % deviceID
+        config.HDC1080_Present = True
 except:
-        config.HTU21DF_Present = False
+        config.HDC1080_Present = False
+
+
+###############
+
+# HTU21DF Detection
+
+if (config.HDC1080_Present == True):
+	config.HTU21DF_Present = False
+else:
+	try:
+		HTU21DFOut = subprocess.check_output(["htu21dflib/htu21dflib","-l"])
+        	config.HTU21DF_Present = True
+	except:
+        	config.HTU21DF_Present = False
 
 
 ###############
@@ -902,14 +936,25 @@ def sampleWeather():
 		HTUtemperature = 0.0
 		HTUhumidity = 0.0
 
+	if (config.HDC1080_Present):
+		
+		HTUtemperature = hdc1080.readTemperature() 
+		HTUhumidity =  hdc1080.readHumidity()
+
+	else:
+		HTUtemperature = 0.0
+		HTUhumidity = 0.0
+
+
+
 	if (config.Sunlight_Present):
 		################
 		# turn I2CBus 3 on
 		if (config.TCA9545_I2CMux_Present):
 	 		tca9545.write_control_register(TCA9545_CONFIG_BUS3)
 
-        	SunlightVisible = Sunlight_Sensor.readVisible()
-        	SunlightIR = Sunlight_Sensor.readIR()
+        	SunlightVisible = SI1145Lux.SI1145_VIS_to_Lux(Sunlight_Sensor.readVisible())
+        	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
         	SunlightUV = Sunlight_Sensor.readUV()
         	SunlightUVIndex = SunlightUV / 100.0
 		################
@@ -1166,10 +1211,6 @@ def sampleAndDisplay():
 
 
 	print "----------------- "
-	print "SecondCount=", secondCount
-        print "----------------- "
-	print "----------------- "
-        print "----------------- "
         if (config.BMP280_Present == True):
                 print " BMP280 Barometer"
         else:
@@ -1201,19 +1242,38 @@ def sampleAndDisplay():
 	 		tca9545.write_control_register(TCA9545_CONFIG_BUS3)
 
 
-        	SunlightVisible = Sunlight_Sensor.readVisible()
-        	SunlightIR = Sunlight_Sensor.readIR()
+        	SunlightVisible = SI1145Lux.SI1145_VIS_to_Lux(Sunlight_Sensor.readVisible())
+        	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
         	SunlightUV = Sunlight_Sensor.readUV()
         	SunlightUVIndex = SunlightUV / 100.0
-        	print 'Sunlight Visible:  ' + str(SunlightVisible)
-        	print 'Sunlight IR:       ' + str(SunlightIR)
-        	print 'Sunlight UV Index: ' + str(SunlightUVIndex)
+        	print 'Sunlight Visible(Lux): %0.2f ' % SunlightVisible
+        	print 'Sunlight IR(Lux):      %0.2f ' % SunlightIR
+        	print 'Sunlight UV Index:     %0.2f ' % SunlightUVIndex
 		################
 		# turn I2CBus 0 on
 		if (config.TCA9545_I2CMux_Present):
 	 		tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 
 
+
+        print "----------------- "
+        if (config.HDC1080_Present == True):
+                print " HDC1080 Temp/Hum"
+        else:
+                print " HDC1080 Temp/Hum Not Present"
+        print "----------------- "
+
+        if (config.HDC1080_Present):
+
+                HTUtemperature = hdc1080.readTemperature() 
+                HTUhumidity = hdc1080.readHumidity() 
+                print "Temperature = \t%0.2f C" % HTUtemperature
+                print "Humidity = \t%0.2f %%" % HTUhumidity
+                if (config.OLED_Present):
+                        Scroll_SSD1306.addLineOLED(display,  "InTemp = \t%0.2f C" % HTUtemperature)
+	else:
+		HTUtemperature = 0.0
+		HTUhumidity = 0.0
 
         print "----------------- "
         if (config.HTU21DF_Present == True):
@@ -1296,7 +1356,8 @@ def sampleAndDisplay():
 	if (config.SunAirPlus_Present):
         
 		# turn I2CBus 2 on
- 		tca9545.write_control_register(TCA9545_CONFIG_BUS2)
+ 		if (config.TCA9545_I2CMux_Present):
+ 			tca9545.write_control_register(TCA9545_CONFIG_BUS2)
 
 		print "----------------- "
 		print "----------------- "
@@ -1455,6 +1516,9 @@ def writePowerRecord():
 
 
 WATCHDOGTRIGGER = 17
+
+
+
 def patTheDog():
 
 
@@ -1580,8 +1644,37 @@ def totalRainArray():
 		total = total+rainArray[i]
 	return total
 
-print ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.7 - SwitchDoc Labs"
+
+# print out faults inside events
+def ap_my_listener(event):
+        if event.exception:
+              print event.exception
+              print event.traceback
+
+# apscheduler events
+
+def tick():
+    print('Tick! The time is: %s' % datetime.now())
+
+
+def killLogger():
+    scheduler.shutdown()
+    print "Scheduler Shutdown...."
+    exit()
+
+def updateRain():
+	addRainToArray(totalRain - lastRainReading)	
+	rain60Minutes = totalRainArray()
+	lastRainReading = totalRain
+	print "rain in past 60 minute=",rain60Minutes
+
+def checkForShutdown():
+	if (batteryVoltage < 3.5):
+		print "--->>>>Time to Shutdown<<<<---"
+		shutdownPi("low voltage shutdown")
+
+print  ""
+print "GroveWeatherPi Solar Powered Weather Station Version 2.8 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1593,6 +1686,7 @@ print "----------------------"
 print returnStatusLine("I2C Mux - TCA9545",config.TCA9545_I2CMux_Present)
 print returnStatusLine("BMP280",config.BMP280_Present)
 print returnStatusLine("DS3231",config.DS3231_Present)
+print returnStatusLine("HDC1080",config.HDC1080_Present)
 print returnStatusLine("HTU21DF",config.HTU21DF_Present)
 print returnStatusLine("AM2315",config.AM2315_Present)
 print returnStatusLine("ADS1015",config.ADS1015_Present)
@@ -1617,9 +1711,70 @@ currentWindDirection = 0
 currentWindDirectionVoltage = 0.0
 rain60Minutes = 0.0
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.7")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.8")
 
-sendemail.sendEmail("test", "GroveWeatherPi Startup \n", "The GroveWeatherPi Raspberry Pi has #rebooted.", config.notifyAddress,  config.fromAddress, "");
+subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
+bodyText = "GroveWeatherPi Version 2.8 Startup \n"
+if (config.SunAirPlus_Present):
+	sampleSunAirPlus()
+	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
+
+sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+
+# Set up scheduler
+
+scheduler = BackgroundScheduler()
+
+# for debugging
+scheduler.add_listener(ap_my_listener, apscheduler.events.EVENT_JOB_ERROR)
+
+##############
+# setup tasks
+##############
+
+# prints out the date and time to console
+scheduler.add_job(tick, 'interval', seconds=60)
+
+# 10 second jobs
+
+scheduler.add_job(sampleAndDisplay, 'interval', seconds=10)
+scheduler.add_job(patTheDog, 'interval', seconds=10)   # reset the WatchDog Timer
+scheduler.add_job(blinkSunAirLED2X, 'interval', seconds=10, args=[2])
+
+# every 5 minutes, push data to mysql and check for shutdown
+
+scheduler.add_job(sampleWeather, 'interval', seconds=5*60)
+scheduler.add_job(sampleSunAirPlus, 'interval', seconds=5*60)
+
+if (config.enable_MySQL_Logging == True):
+	scheduler.add_job(writeWeatherRecord, 'interval', seconds=5*60)
+	scheduler.add_job(writePowerRecord, 'interval', seconds=5*60)
+
+scheduler.add_job(updateRain, 'interval', seconds=5*60)
+scheduler.add_job(checkForShutdown, 'interval', seconds=5*60)
+
+# every 15 minutes, build new graphs
+scheduler.add_job(sampleWeather, 'interval', seconds=15*60)
+scheduler.add_job(sampleSunAirPlus, 'interval', seconds=15*60)
+scheduler.add_job(doAllGraphs.doAllGraphs, 'interval', seconds=15*60) 
+
+# every 30 minutes, check wifi connections 
+scheduler.add_job(WLAN_check, 'interval', seconds=30*60)
+
+# every 48 hours at 00:04, reboot
+scheduler.add_job(rebootPi, 'cron', day='2-30/2', hour=0, minute=4, args=["48 Hour Reboot"]) 
+	
+
+
+
+# start scheduler
+scheduler.start()
+print "-----------------"
+print "Scheduled Jobs"
+print "-----------------"
+scheduler.print_jobs()
+print "-----------------"
+
 
 if (config.SunAirPlus_Present == False):
 
@@ -1638,8 +1793,9 @@ if (config.SunAirPlus_Present == False):
 
 		batteryCharge = 0 
 
+#  Main Loop
 
-secondCount = 1
+
 while True:
 	
 	# process Interrupts from Lightning
@@ -1657,70 +1813,16 @@ while True:
  	if (config.TCA9545_I2CMux_Present):
          	tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 	# process commands from RasPiConnect
-	print "---------------------------------------- "
-
+	
 	processCommand()	
 
-	if ((secondCount % 10) == 0):
-		# print every 10 seconds
-		sampleAndDisplay()		
-		patTheDog()      # reset the WatchDog Timer
-		blinkSunAirLED2X(2)
 
 
 
-	# every 5 minutes, push data to mysql and check for shutdown
 
 
-	if ((secondCount % (5*60)) == 0):
-		# print every 300 seconds
-                sampleWeather()
-                sampleSunAirPlus()
-		if (config.enable_MySQL_Logging == True):
-			writeWeatherRecord()
-			writePowerRecord()
-
-	
-		addRainToArray(totalRain - lastRainReading)	
-		rain60Minutes = totalRainArray()
-		lastRainReading = totalRain
-		print "rain in past 60 minute=",rain60Minutes
 
 
-		if (batteryVoltage < 3.5):
-			print "--->>>>Time to Shutdown<<<<---"
-			shutdownPi("low voltage shutdown")
-
-
-	# every 15 minutes, build new graphs
-
-	if ((secondCount % (15*60)) == 0):
-		# print every 900 seconds
-                sampleWeather()
-                sampleSunAirPlus()
-		doAllGraphs.doAllGraphs()
-
-	# every 30 minutes, check wifi connections 
-
-	if ((secondCount % (30*60)) == 0):
-	#if ((secondCount % (30)) == 0):
-		# print every 1800 seconds
-    		WLAN_check()
-
-    	#WLAN_check()
-
-
-	# every 48 hours, reboot
-	if ((secondCount % (60*60*48)) == 0):
-		# reboot every 48() hours seconds
-		rebootPi("48 hour reboot")		
-
-
-	secondCount = secondCount + 1
-	# reset secondCount to prevent overflow forever
-
-	if (secondCount == 1000001):
-		secondCount = 1	
 	
 	time.sleep(1.0)
 

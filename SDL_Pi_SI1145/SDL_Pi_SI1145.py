@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# modified for medium range vis, IR SDL December 2016
 
 # Author: Joe Gutting
 # With use of Adafruit SI1145 library for Arduino, Adafruit_GPIO.I2C & BMP Library by Tony DiCola
@@ -84,12 +84,14 @@ SI1145_PARAM_AUXADCMUX                  = 0x0F
 SI1145_PARAM_ALSVISADCOUNTER            = 0x10
 SI1145_PARAM_ALSVISADCGAIN              = 0x11
 SI1145_PARAM_ALSVISADCMISC              = 0x12
-SI1145_PARAM_ALSVISADCMISC_VISRANGE     = 0x20
+SI1145_PARAM_ALSVISADCMISC_VISRANGE     = 0x10
+#SI1145_PARAM_ALSVISADCMISC_VISRANGE     = 0x00
 
 SI1145_PARAM_ALSIRADCOUNTER             = 0x1D
 SI1145_PARAM_ALSIRADCGAIN               = 0x1E
 SI1145_PARAM_ALSIRADCMISC               = 0x1F
 SI1145_PARAM_ALSIRADCMISC_RANGE         = 0x20
+#SI1145_PARAM_ALSIRADCMISC_RANGE         = 0x00
 
 SI1145_PARAM_ADCCOUNTER_511CLK          = 0x70
 
@@ -223,22 +225,26 @@ class SDL_Pi_SI1145(object):
                 self.writeParam(SI1145_PARAM_ALSIRADCMUX, SI1145_PARAM_ADCMUX_SMALLIR)
 
                 # Fastest clocks, clock div 1
-                self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
+                #self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
+                self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 4)
 
                 # Take 511 clocks to measure
                 self.writeParam(SI1145_PARAM_ALSIRADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
 
                 # in high range mode
-                self.writeParam(SI1145_PARAM_ALSIRADCMISC, SI1145_PARAM_ALSIRADCMISC_RANGE)
+                self.writeParam(SI1145_PARAM_ALSIRADCMISC, 0)
+                #self.writeParam(SI1145_PARAM_ALSIRADCMISC, SI1145_PARAM_ALSIRADCMISC_RANGE)
 
                 # fastest clocks, clock div 1
-                self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
+                #self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
+                self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 4)
 
                 # Take 511 clocks to measure
                 self.writeParam(SI1145_PARAM_ALSVISADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
 
                 # in high range mode (not normal signal)
-                self.writeParam(SI1145_PARAM_ALSVISADCMISC, SI1145_PARAM_ALSVISADCMISC_VISRANGE)
+                #self.writeParam(SI1145_PARAM_ALSVISADCMISC, SI1145_PARAM_ALSVISADCMISC_VISRANGE)
+                self.writeParam(SI1145_PARAM_ALSVISADCMISC, 0)
 
                 # measurement rate for auto
                 self._device.write8(SI1145_REG_MEASRATE0, 0xFF) # 255 * 31.25uS = 8ms

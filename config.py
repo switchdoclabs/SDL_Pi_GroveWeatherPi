@@ -5,6 +5,10 @@
 # JCS 11/8/2013
 #
 
+# it is a good idea to copy this file into a file called "conflocal.py" and edit that instead of this one.  This file is wiped out if you update GroveWeatherPi.
+
+
+
 mailUser = "yourusename"
 mailPassword = "yourmailpassword"
 
@@ -47,6 +51,7 @@ DS3231_Present = False
 BMP280_Present = False
 FRAM_Present = False
 HTU21DF_Present = False
+HDC1080_Present = False
 AM2315_Present = False
 ADS1015_Present = False
 ADS1115_Present = False

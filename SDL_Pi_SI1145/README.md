@@ -1,10 +1,17 @@
 SwitchDoc Labs October, 2016
 
-Restructured for software distribution 
+Restructured for software distribution <BR>
+Library functions added for reading VIS/IR in Lux with Dark Offset applied <BR>
+Gain and Range changed for showing indoor ranges<BR>
+
+
+To setup:<BR>
+git clone https://github.com/adafruit/Adafruit_Python_PureIO.git<BR>
+cd Adafruit_Python_PureIO<BR>
+sudo python setup.py install<BR>
 
 Original README.md
 
-Ignore installation instructions below:
 
 -------------------
 
@@ -14,12 +21,6 @@ Python_SI1145
 Python library for accessing the SI1145 temperature sensor on a Raspberry Pi.
 
 Designed specifically to work with the Adafruit SI1145 sensors ----> https://www.adafruit.com/product/1777
-
-To install, download the library by clicking the download zip link to the right and unzip the archive somewhere on your Raspberry Pi. Then execute the following command in the directory of the library:
-
-sudo python setup.py install
-
-Make sure you have internet access on the device so it can download the required dependencies.
 
 See examples of usage in the examples folder.
 

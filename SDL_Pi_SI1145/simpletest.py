@@ -27,7 +27,7 @@
 
 import time
 import SDL_Pi_SI1145 
-
+import SI1145Lux
 
 # Default constructor will pick a default I2C bus.
 #
@@ -46,10 +46,14 @@ while True:
         vis = sensor.readVisible()
         IR = sensor.readIR()
         UV = sensor.readUV()
+        IR_Lux = SI1145Lux.SI1145_IR_to_Lux(IR)
+        vis_Lux = SI1145Lux.SI1145_VIS_to_Lux(vis)
         uvIndex = UV / 100.0
         print 'Vis:             ' + str(vis)
         print 'IR:              ' + str(IR)
+        print 'Vis Lux:             ' + str(vis_Lux)
+        print 'IR Lux:              ' + str(IR_Lux)
         print 'UV Index:        ' + str(uvIndex)
 
-        time.sleep(3)
+        time.sleep(5)
 
