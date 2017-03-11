@@ -197,15 +197,18 @@ if (config.TCA9545_I2CMux_Present):
 
 # Check for HDC1080 first (both are on 0x40)
 
-hdc1080 = SDL_Pi_HDC1000.SDL_Pi_HDC1000() 
 
 ###############
 
 # HDC1080 Detection
 try:
+	hdc1080 = SDL_Pi_HDC1000.SDL_Pi_HDC1000() 
         deviceID = hdc1080.readDeviceID() 
-	#print "deviceID = 0x%X" % deviceID
-        config.HDC1080_Present = True
+	print "deviceID = 0x%X" % deviceID
+	if (deviceID == 0x1050):
+        	config.HDC1080_Present = True
+	else:
+		config.HDC1080_Present = False
 except:
         config.HDC1080_Present = False
 
