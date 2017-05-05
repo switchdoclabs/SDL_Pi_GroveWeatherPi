@@ -112,7 +112,7 @@ import Scroll_SSD1306
 import WeatherUnderground
 
 try:
-	import xSDL_Pi_SI1145
+	import SDL_Pi_SI1145
 	import SI1145Lux
 except:
 	print "Bad SI1145 Installation"
