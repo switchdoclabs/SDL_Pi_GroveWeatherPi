@@ -111,8 +111,12 @@ import Scroll_SSD1306
 
 import WeatherUnderground
 
-import SDL_Pi_SI1145
-import SI1145Lux
+try:
+	import xSDL_Pi_SI1145
+	import SI1145Lux
+except:
+	print "Bad SI1145 Installation"
+
 
 
 def returnStatusLine(device, state):
@@ -1673,7 +1677,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.8 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.91 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1761,7 +1765,7 @@ scheduler.add_job(doAllGraphs.doAllGraphs, 'interval', seconds=15*60)
 scheduler.add_job(WLAN_check, 'interval', seconds=30*60)
 
 # every 48 hours at 00:04, reboot
-scheduler.add_job(rebootPi, 'cron', day='2-30/2', hour=0, minute=4, args=["48 Hour Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='2-30/2', hour=0, minute=4, args=["48 Hour Reboot"]) 
 	
 
 
