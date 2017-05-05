@@ -927,6 +927,8 @@ def sampleWeather():
         		print("Unexpected error:", sys.exc_info()[0])
 
 
+	HTUtemperature = 0.0
+	HTUhumidity = 0.0
 
 	if (config.HTU21DF_Present):
 		# We use a C library for this device as it just doesn't play well with Python and smbus/I2C libraries
@@ -936,18 +938,11 @@ def sampleWeather():
 		HTUtemperature = float(splitstring[0])	
 		HTUhumidity = float(splitstring[1])	
 
-	else:
-		HTUtemperature = 0.0
-		HTUhumidity = 0.0
 
 	if (config.HDC1080_Present):
 		
 		HTUtemperature = hdc1080.readTemperature() 
 		HTUhumidity =  hdc1080.readHumidity()
-
-	else:
-		HTUtemperature = 0.0
-		HTUhumidity = 0.0
 
 
 

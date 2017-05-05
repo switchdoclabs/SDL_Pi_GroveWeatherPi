@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.8 
+Version 2.9 
 
 http://www.switchdoc.com/
+
+May 4, 2017 - Fixed problem with inside temperature being zero when you have an HTU rather than a HDC1080 
 
 March 9, 2017 - Added time based scheduler into the main loop instead of polling (APscheduler).  Added support for Grove HDC1000
 
