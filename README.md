@@ -6,6 +6,8 @@ Version 2.91
 
 http://www.switchdoc.com/
 
+June 17, 2017 - Changed the README.md to require the installation of the software suporting SI1145 detection
+
 May 5, 2017 - Commented out 48 Reboot add_job (uncomment to add back in), Fixed SI1145 bad installation detection 
 
 May 4, 2017 - Fixed problem with inside temperature being zero when you have an HTU rather than a HDC1080 
