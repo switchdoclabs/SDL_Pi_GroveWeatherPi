@@ -40,6 +40,8 @@ def get_default_bus():
     Raspberry Pi either bus 0 or 1 (based on the Pi revision) will be returned.
     For a Beaglebone Black the first user accessible bus, 1, will be returned.
     """
+    # adding the return 1 as the platform detect does not work on all installations on the Raspberry Pi - remove next line if using something else
+    return 1
     plat = Platform.platform_detect()
     if plat == Platform.RASPBERRY_PI:
         if Platform.pi_revision() == 1:
