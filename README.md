@@ -44,7 +44,7 @@ Install this for smbus:
 
 sudo apt-get install python-smbus
 
-If using the Grove Sunlight Sensor do this:
+Install this next:
 
 git clone https://github.com/adafruit/Adafruit_Python_PureIO.git<BR>
 cd Adafruit_Python_PureIO<BR>
