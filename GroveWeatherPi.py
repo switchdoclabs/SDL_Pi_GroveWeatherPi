@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.8 March 9, 2017
+# Version 2.93 June 19, 2017 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -17,6 +17,8 @@ import random
 import re
 import math
 import os
+
+import commands
 
 import sendemail
 import pclogging
@@ -1666,6 +1668,7 @@ def killLogger():
     exit()
 
 def updateRain():
+	global lastRainReading
 	addRainToArray(totalRain - lastRainReading)	
 	rain60Minutes = totalRainArray()
 	lastRainReading = totalRain
@@ -1677,11 +1680,17 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.91 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.93 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
 print ""
+
+# Initialize Variables
+bmp180Temperature =  0
+bmp180Pressure = 0 
+bmp180Altitude = 0
+bmp180SeaLevel = 0 
 
 
 
@@ -1717,7 +1726,8 @@ rain60Minutes = 0.0
 pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.8")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
-bodyText = "GroveWeatherPi Version 2.8 Startup \n"
+ipAddress = commands.getoutput('hostname -I')
+bodyText = "GroveWeatherPi Version 2.93 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
