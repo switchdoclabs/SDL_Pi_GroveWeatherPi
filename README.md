@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.93 
+Version 2.94 
 
 http://www.switchdoc.com/
+
+July 17, 2017 - Updated Bounce Times to fix wind speed issues - This probably fixes the Wind Gust problem too.  Not conculsive.
 
 June 19, 2017 - Fixed uninitialized variable errors
 

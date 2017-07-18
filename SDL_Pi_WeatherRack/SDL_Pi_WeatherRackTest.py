@@ -25,8 +25,10 @@ import SDL_Pi_WeatherRack as SDL_Pi_WeatherRack
 # GPIO Numbering Mode GPIO.BCM
 #
 
-anenometerPin = 6
-rainPin = 12
+anenometerPin = 26
+rainPin = 21
+#anenometerPin = 6
+#rainPin = 12
 
 # constants
 
@@ -43,6 +45,8 @@ weatherStation = SDL_Pi_WeatherRack.SDL_Pi_WeatherRack(anenometerPin, rainPin, 0
 weatherStation.setWindMode(SDL_MODE_SAMPLE, 5.0)
 #weatherStation.setWindMode(SDL_MODE_DELAY, 5.0)
 
+maxEverWind = 0.0
+maxEverGust = 0.0
 totalRain = 0
 while True:
 
@@ -54,14 +58,22 @@ while True:
         print "----------------- "
         #
 
-        currentWindSpeed = weatherStation.current_wind_speed()/1.6
-        currentWindGust = weatherStation.get_wind_gust()/1.6
-        totalRain = totalRain + weatherStation.get_current_rain_total()/25.4
+        currentWindSpeed = weatherStation.current_wind_speed()/1.609
+        currentWindGust = weatherStation.get_wind_gust()/1.609
+        totalRain = totalRain + (weatherStation.get_current_rain_total()/25.4)
         print("Rain Total=\t%0.2f in")%(totalRain)
         print("Wind Speed=\t%0.2f MPH")%(currentWindSpeed)
-        print("MPH wind_gust=\t%0.2f MPH")%(currentWindGust)
+	if currentWindSpeed > maxEverWind:
+		maxEverWind = currentWindSpeed
 
+	if currentWindGust > maxEverGust:
+		maxEverGust = currentWindGust
+
+        print("max Ever Wind Speed=\t%0.2f MPH")%(maxEverWind)
+        print("MPH wind_gust=\t%0.2f MPH")%(currentWindGust)
+        print("max Ever Gust wind_gust=\t%0.2f MPH")%(maxEverGust)
         print "Wind Direction=\t\t\t %0.2f Degrees" % weatherStation.current_wind_direction()
+
         print "Wind Direction Voltage=\t\t %0.3f V" % weatherStation.current_wind_direction_voltage()
 
         print "----------------- "

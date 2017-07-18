@@ -868,7 +868,7 @@ def sampleWeather():
 	if (config.WXLink_Present == False):
  		currentWindSpeed = weatherStation.current_wind_speed()
   		currentWindGust = weatherStation.get_wind_gust()
-  		totalRain = totalRain + weatherStation.get_current_rain_total()
+  		totalRain = totalRain + weatherStation.get_current_rain_total()/weatherStation.SDL_INTERRUPT_CLICKS
 		if ((config.ADS1015_Present == True) or (config.ADS1115_Present == True)):
 			currentWindDirection = weatherStation.current_wind_direction()
 			currentWindDirectionVoltage = weatherStation.current_wind_direction_voltage()
