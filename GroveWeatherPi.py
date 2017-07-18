@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.93 June 19, 2017 
+# Version 2.94 July 17, 2017 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -1680,7 +1680,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.93 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.94 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
