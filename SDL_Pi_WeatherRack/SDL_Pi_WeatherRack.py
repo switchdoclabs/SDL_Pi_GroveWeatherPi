@@ -296,7 +296,7 @@ class SDL_Pi_WeatherRack:
  
       			SDL_Pi_WeatherRack._currentWindSpeed = (float(SDL_Pi_WeatherRack._currentWindCount)/float(timeSpan)) * WIND_FACTOR*1000000.0
 
-			print "SDL_CWS = %f, SDL_Pi_WeatherRack._shortestWindTime = %i, CWCount=%i TPS=%f" % (SDL_Pi_WeatherRack._currentWindSpeed,SDL_Pi_WeatherRack._shortestWindTime, SDL_Pi_WeatherRack._currentWindCount, float(SDL_Pi_WeatherRack._currentWindCount)/float(SDL_Pi_WeatherRack._sampleTime)) 
+			#print "SDL_CWS = %f, SDL_Pi_WeatherRack._shortestWindTime = %i, CWCount=%i TPS=%f" % (SDL_Pi_WeatherRack._currentWindSpeed,SDL_Pi_WeatherRack._shortestWindTime, SDL_Pi_WeatherRack._currentWindCount, float(SDL_Pi_WeatherRack._currentWindCount)/float(SDL_Pi_WeatherRack._sampleTime)) 
 
       			SDL_Pi_WeatherRack._currentWindCount = 0
       
