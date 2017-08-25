@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.95 
+Version 2.96 
 
 http://www.switchdoc.com/
+
+August 24, 2017 - Fixed AS3935 Missing  issue with Interrupt variable
 
 July 20, 2017 - Fixed Rainfall 2X inaccuracy and 60 minute and midnight issues
 
