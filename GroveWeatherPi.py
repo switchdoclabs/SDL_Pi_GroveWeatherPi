@@ -1314,9 +1314,6 @@ def sampleAndDisplay():
                 print "Humidity = \t%0.2f %%" % HTUhumidity
                 if (config.OLED_Present):
                         Scroll_SSD1306.addLineOLED(display,  "InTemp = \t%0.2f C" % HTUtemperature)
-	else:
-		HTUtemperature = 0.0
-		HTUhumidity = 0.0
 
         print "----------------- "
 
