@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.96 August 24, 2017
+# Version 2.97 October 2, 2017
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -281,7 +281,7 @@ def resetWXLink():
         GPIO.setup(WXLinkResetPin, GPIO.IN)
  	time.sleep(2.0)		
 
-resetWXLink()
+#resetWXLink()
 
 WXLink = smbus.SMBus(1)
 try:
@@ -296,6 +296,7 @@ except:
 block1 = ""
 block2 = ""
 
+
 ###############
 
 # Sunlight SI1145 Sensor Setup
@@ -308,7 +309,16 @@ if (config.TCA9545_I2CMux_Present):
 try:
 	Sunlight_Sensor = SDL_Pi_SI1145.SDL_Pi_SI1145()
         visible = Sunlight_Sensor.readVisible() 
+	print "visible=", visible
         config.Sunlight_Present = True
+        vis = Sunlight_Sensor.readVisible()
+       	IR = Sunlight_Sensor.readIR()
+       	UV = Sunlight_Sensor.readUV()
+       	IR_Lux = SI1145Lux.SI1145_IR_to_Lux(IR)
+       	vis_Lux = SI1145Lux.SI1145_VIS_to_Lux(vis)
+       	uvIndex = UV / 100.0
+
+
 except:
         config.Sunlight_Present = False
 
@@ -1252,6 +1262,11 @@ def sampleAndDisplay():
         	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
         	SunlightUV = Sunlight_Sensor.readUV()
         	SunlightUVIndex = SunlightUV / 100.0
+		time.sleep(0.5)
+        	SunlightVisible = SI1145Lux.SI1145_VIS_to_Lux(Sunlight_Sensor.readVisible())
+        	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
+        	SunlightUV = Sunlight_Sensor.readUV()
+        	SunlightUVIndex = SunlightUV / 100.0
         	print 'Sunlight Visible(Lux): %0.2f ' % SunlightVisible
         	print 'Sunlight IR(Lux):      %0.2f ' % SunlightIR
         	print 'Sunlight UV Index:     %0.2f ' % SunlightUVIndex
@@ -1682,7 +1697,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.96 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.97 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1727,11 +1742,11 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.96")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.97")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')
-bodyText = "GroveWeatherPi Version 2.96 Startup \n"+ipAddress+"\n"
+bodyText = "GroveWeatherPi Version 2.97 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)

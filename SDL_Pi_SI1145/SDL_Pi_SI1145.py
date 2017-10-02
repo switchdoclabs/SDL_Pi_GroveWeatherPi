@@ -1,8 +1,7 @@
 #!/usr/bin/python
-# modified for medium range vis, IR SDL December 2016
+# modified for medium range vis, IR SDL December 2016 and non Adafruit I2C (interfears with others)
 
-# Author: Joe Gutting
-# With use of Adafruit SI1145 library for Arduino, Adafruit_GPIO.I2C & BMP Library by Tony DiCola
+# Original Author: Joe Gutting
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +24,8 @@
 import logging
 import time
 
-import I2C as I2C
+import smbus
+
 
 # COMMANDS
 SI1145_PARAM_QUERY                      = 0x80
@@ -154,12 +154,12 @@ SI1145_REG_CHIPSTAT                     = 0x30
 SI1145_ADDR                             = 0x60
 
 class SDL_Pi_SI1145(object):
-        def __init__(self, address=SI1145_ADDR, busnum=I2C.get_default_bus()):
+        def __init__(self, address=SI1145_ADDR, busnum=1):
 
                 self._logger = logging.getLogger('SI1145')
 
                 # Create I2C device.
-                self._device = I2C.Device(address, busnum)
+                self._device = smbus.SMBus(1) 
 
                 #reset device
                 self._reset()
@@ -169,46 +169,46 @@ class SDL_Pi_SI1145(object):
 
         # device reset
         def _reset(self):
-                self._device.write8(SI1145_REG_MEASRATE0, 0)
-                self._device.write8(SI1145_REG_MEASRATE1, 0)
-                self._device.write8(SI1145_REG_IRQEN, 0)
-                self._device.write8(SI1145_REG_IRQMODE1, 0)
-                self._device.write8(SI1145_REG_IRQMODE2, 0)
-                self._device.write8(SI1145_REG_INTCFG, 0)
-                self._device.write8(SI1145_REG_IRQSTAT, 0xFF)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_MEASRATE0, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_MEASRATE1, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_IRQEN, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_IRQMODE1, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_IRQMODE2, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_INTCFG, 0)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_IRQSTAT, 0xFF)
 
-                self._device.write8(SI1145_REG_COMMAND, SI1145_RESET)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_COMMAND, SI1145_RESET)
                 time.sleep(.01)
-                self._device.write8(SI1145_REG_HWKEY, 0x17)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_HWKEY, 0x17)
                 time.sleep(.01)
 
         # write Param
         def writeParam(self, p, v):
-                self._device.write8(SI1145_REG_PARAMWR, v)
-                self._device.write8(SI1145_REG_COMMAND, p | SI1145_PARAM_SET)
-                paramVal = self._device.readU8(SI1145_REG_PARAMRD)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_PARAMWR, v)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_COMMAND, p | SI1145_PARAM_SET)
+                paramVal = self._device.read_byte_data(SI1145_ADDR, SI1145_REG_PARAMRD)
                 return paramVal
 
         # load calibration to sensor
         def _load_calibration(self):
                 # /***********************************/
                 # Enable UVindex measurement coefficients!
-                self._device.write8(SI1145_REG_UCOEFF0, 0x29)
-                self._device.write8(SI1145_REG_UCOEFF1, 0x89)
-                self._device.write8(SI1145_REG_UCOEFF2, 0x02)
-                self._device.write8(SI1145_REG_UCOEFF3, 0x00)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_UCOEFF0, 0x29)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_UCOEFF1, 0x89)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_UCOEFF2, 0x02)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_UCOEFF3, 0x00)
 
                 # Enable UV sensor
                 self.writeParam(SI1145_PARAM_CHLIST, SI1145_PARAM_CHLIST_ENUV | SI1145_PARAM_CHLIST_ENALSIR | SI1145_PARAM_CHLIST_ENALSVIS | SI1145_PARAM_CHLIST_ENPS1)
 
                 # Enable interrupt on every sample
-                self._device.write8(SI1145_REG_INTCFG, SI1145_REG_INTCFG_INTOE)
-                self._device.write8(SI1145_REG_IRQEN, SI1145_REG_IRQEN_ALSEVERYSAMPLE)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_INTCFG, SI1145_REG_INTCFG_INTOE)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_IRQEN, SI1145_REG_IRQEN_ALSEVERYSAMPLE)
 
                 # /****************************** Prox Sense 1 */
 
                 # Program LED current
-                self._device.write8(SI1145_REG_PSLED21, 0x03) # 20mA for LED 1 only
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_PSLED21, 0x03) # 20mA for LED 1 only
                 self.writeParam(SI1145_PARAM_PS1ADCMUX, SI1145_PARAM_ADCMUX_LARGEIR)
 
                 # Prox sensor #1 uses LED #1
@@ -247,24 +247,28 @@ class SDL_Pi_SI1145(object):
                 self.writeParam(SI1145_PARAM_ALSVISADCMISC, 0)
 
                 # measurement rate for auto
-                self._device.write8(SI1145_REG_MEASRATE0, 0xFF) # 255 * 31.25uS = 8ms
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_MEASRATE0, 0xFF) # 255 * 31.25uS = 8ms
 
                 # auto run
-                self._device.write8(SI1145_REG_COMMAND, SI1145_PSALS_AUTO)
+                self._device.write_byte_data(SI1145_ADDR,SI1145_REG_COMMAND, SI1145_PSALS_AUTO)
 
         # returns the UV index * 100 (divide by 100 to get the index)
         def readUV(self):
-                return self._device.readU16LE(0x2C)
+                data = self._device.read_i2c_block_data(SI1145_ADDR,0x2C,2)
+		return data[1] * 256 + data[0]
 
         #returns visible + IR light levels
         def readVisible(self):
-                return self._device.readU16LE(0x22)
+                data =  self._device.read_i2c_block_data(SI1145_ADDR,0x22,2)
+		return data[1] * 256 + data[0]
 
         #returns IR light levels
         def readIR(self):
-                return self._device.readU16LE(0x24)
+                data = self._device.read_i2c_block_data(SI1145_ADDR,0x24,2)
+		return data[1] * 256 + data[0]
 
         # Returns "Proximity" - assumes an IR LED is attached to LED
         def readProx(self):
-                return self._device.readU16LE(0x26)
+                data = self._device.read_i2c_block_data(SI1145_ADDR,0x26,2)
+		return data[1] * 256 + data[0]
 
