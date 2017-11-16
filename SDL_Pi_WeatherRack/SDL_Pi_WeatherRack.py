@@ -28,9 +28,9 @@ except:
 import sys
 import time as time_
 
-sys.path.append('./Adafruit_ADS1x15')
+sys.path.append('./SDL_Adafruit_ADS1x15')
 
-from Adafruit_ADS1x15 import ADS1x15
+from SDL_Adafruit_ADS1x15 import ADS1x15
 
 import RPi.GPIO as GPIO
 
