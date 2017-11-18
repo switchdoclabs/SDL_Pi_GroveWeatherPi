@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.98 November 16, 2017
+# Version 2.99 November 18, 2017
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -400,7 +400,7 @@ if (config.Lightning_Mode == True):
         if (config.TCA9545_I2CMux_Present):
          	tca9545.write_control_register(TCA9545_CONFIG_BUS1)
 
-        as3935 = RPi_AS3935(address=0x03, bus=1)
+        as3935 = RPi_AS3935(address=0x02, bus=1)
 
         try:
 
@@ -409,12 +409,20 @@ if (config.Lightning_Mode == True):
                 #print "as3935 present"
 
         except IOError as e:
+        	as3935 = RPi_AS3935(address=0x03, bus=1)
 
-                #    print "I/O error({0}): {1}".format(e.errno, e.strerror)
-                config.AS3935_Present = False
-                # back to BUS0
-                if (config.TCA9545_I2CMux_Present):
-        		 tca9545.write_control_register(TCA9545_CONFIG_BUS0)
+        	try:
+
+                	as3935.set_indoors(False)
+                	config.AS3935_Present = True
+                	#print "as3935 present"
+        	except IOError as e:
+
+               		#    print "I/O error({0}): {1}".format(e.errno, e.strerror)
+                	config.AS3935_Present = False
+                	# back to BUS0
+                	if (config.TCA9545_I2CMux_Present):
+        		 	tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 
 
         if (config.AS3935_Present == True):
@@ -1694,7 +1702,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.98 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 2.99 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1739,11 +1747,11 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.98")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.99")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')
-bodyText = "GroveWeatherPi Version 2.98 Startup \n"+ipAddress+"\n"
+bodyText = "GroveWeatherPi Version 2.99 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)

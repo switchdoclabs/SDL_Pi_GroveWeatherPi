@@ -7,6 +7,8 @@ Version 2.98
 http://www.switchdoc.com/
 
 
+November 18, 2017 - Adjusted Lightning Detector detection for 0x02 or 0x03 
+
 November 16, 2017 - Fixed name clash with latest OS version
 
 October 2, 2017 - Fixed SI1145 issues with reading
