@@ -7,8 +7,7 @@ Version 3.01
 http://www.switchdoc.com/
 
 
-May 30, 2018 - Version 3.01 
-
+May 30, 2018 - Version 3.01 Fixed MySQL Garding, bad read issues with SI1145, gave fix for Mising BBIO Library in README.md
 
 November 18, 2017 - Version 2.99 Adjusted Lightning Detector detection for 0x02 or 0x03 
 
