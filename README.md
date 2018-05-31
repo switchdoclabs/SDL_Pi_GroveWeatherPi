@@ -2,9 +2,12 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 2.99 
+Version 3.01 
 
 http://www.switchdoc.com/
+
+
+May 30, 2018 - Version 3.01 
 
 
 November 18, 2017 - Version 2.99 Adjusted Lightning Detector detection for 0x02 or 0x03 
@@ -83,15 +86,19 @@ sudo pip install setuptools --upgrade  <BR>
 sudo pip install apscheduler <BR>
 
 
-----------------
-Note some configurations of Raspberry Pi software requres the following:
-----------------
+----------------<BR>
+Note some configurations of Raspberry Pi software requres the following:<BR>
+It won't hurt to do this in any case.<BR>
+----------------<BR>
 <pre>
 sudo apt-get update
 sudo apt-get install build-essential python-pip python-dev python-smbus git
 git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
 cd Adafruit_Python_GPIO
 sudo python setup.py install
+cd ..
+cd Adafruit_Python_SSD1306
+sudo python setup.py
 </pre>
 SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on: store.switchdoc.com
 
@@ -114,7 +121,7 @@ Use phpmyadmin or sql command lines to add the included SQL file to your MySQL d
 Note:  If the database has been updated, run the example below to update your database.   The current contents will not be lost.
 
 
-example:   mysql -u root -p GroveWeatherPi< GroveWeatherPi.sql
+example:   sudo mysql -u root -p GroveWeatherPi< GroveWeatherPi.sql
 
 user:  root
 

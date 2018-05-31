@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 2.99 November 18, 2017
+# Version 3.01 May 30, 2018
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -21,6 +21,9 @@ import os
 import commands
 
 import sendemail
+import logging
+logging.basicConfig()
+
 import pclogging
 
 
@@ -1265,16 +1268,12 @@ def sampleAndDisplay():
 		if (config.TCA9545_I2CMux_Present):
 	 		tca9545.write_control_register(TCA9545_CONFIG_BUS3)
 
-
+	
         	SunlightVisible = SI1145Lux.SI1145_VIS_to_Lux(Sunlight_Sensor.readVisible())
         	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
         	SunlightUV = Sunlight_Sensor.readUV()
         	SunlightUVIndex = SunlightUV / 100.0
 		time.sleep(0.5)
-        	SunlightVisible = SI1145Lux.SI1145_VIS_to_Lux(Sunlight_Sensor.readVisible())
-        	SunlightIR = SI1145Lux.SI1145_IR_to_Lux(Sunlight_Sensor.readIR())
-        	SunlightUV = Sunlight_Sensor.readUV()
-        	SunlightUVIndex = SunlightUV / 100.0
         	print 'Sunlight Visible(Lux): %0.2f ' % SunlightVisible
         	print 'Sunlight IR(Lux):      %0.2f ' % SunlightIR
         	print 'Sunlight UV Index:     %0.2f ' % SunlightUVIndex
@@ -1702,7 +1701,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 2.99 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 3.01 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1747,11 +1746,11 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 2.99")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.01")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')
-bodyText = "GroveWeatherPi Version 2.99 Startup \n"+ipAddress+"\n"
+bodyText = "GroveWeatherPi Version 3.01 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
@@ -1776,7 +1775,6 @@ scheduler.add_job(tick, 'interval', seconds=60)
 
 scheduler.add_job(sampleAndDisplay, 'interval', seconds=10)
 scheduler.add_job(patTheDog, 'interval', seconds=10)   # reset the WatchDog Timer
-scheduler.add_job(blinkSunAirLED2X, 'interval', seconds=10, args=[2])
 
 # every 5 minutes, push data to mysql and check for shutdown
 
@@ -1799,7 +1797,7 @@ scheduler.add_job(doAllGraphs.doAllGraphs, 'interval', seconds=15*60)
 scheduler.add_job(WLAN_check, 'interval', seconds=30*60)
 
 # every 48 hours at 00:04, reboot
-#scheduler.add_job(rebootPi, 'cron', day='2-30/2', hour=0, minute=4, args=["48 Hour Reboot"]) 
+scheduler.add_job(rebootPi, 'cron', day='2-30/2', hour=0, minute=4, args=["48 Hour Reboot"]) 
 	
 
 

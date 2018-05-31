@@ -20,7 +20,7 @@ textnotifyAddress = "yourphonenumber@yourprovider"
 
 #MySQL Logging and Password Information
 
-enable_MySQL_Logging = True
+enable_MySQL_Logging = False
 MySQL_Password = "password"
 
 # modify this IP to enable WLAN operating detection  - search for WLAN_check in GroveWeatherPi.py
@@ -58,6 +58,10 @@ ADS1115_Present = False
 OLED_Present = False
 WXLink_Present = False
 Sunlight_Preset = False
+
+# set Sunlight High Gain (indoors - 1) or Low Gain (outdoors - 0)
+Sunlight_Gain = 0
+
 
 # if the WXLink has stopped transmitting, == False
 WXLink_Data_Fresh = False
