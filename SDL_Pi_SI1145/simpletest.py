@@ -49,11 +49,14 @@ while True:
         IR_Lux = SI1145Lux.SI1145_IR_to_Lux(IR)
         vis_Lux = SI1145Lux.SI1145_VIS_to_Lux(vis)
         uvIndex = UV / 100.0
-        print 'Vis:             ' + str(vis)
+	print '--------------------'
+	print 'Vis:             ' + str(vis)
         print 'IR:              ' + str(IR)
+	print 'UV:		' + str(UV)
+	print '--------------------'
         print 'Vis Lux:             ' + str(vis_Lux)
         print 'IR Lux:              ' + str(IR_Lux)
         print 'UV Index:        ' + str(uvIndex)
-
+	print '--------------------'
         time.sleep(5)
 

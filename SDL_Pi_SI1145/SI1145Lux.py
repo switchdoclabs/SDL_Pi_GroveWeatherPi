@@ -56,7 +56,8 @@ def SI1145_IR_to_Lux(ir):
        multiplier = 128
    '''
    multiplier = 1
-   irlux = ir * (gain / (lux * multiplier))
+   #calibration factor to sunlight applied
+   irlux = ir * (gain / (lux * multiplier)) * 50
    return irlux
 
 def SI1145_VIS_to_Lux(vis):
@@ -102,7 +103,8 @@ def SI1145_VIS_to_Lux(vis):
        multiplier = 128
    '''
    multiplier = 1
-   vislux = vis * (gain / (lux * multiplier))
+   # calibration to bright sunlight added
+   vislux = vis * (gain / (lux * multiplier)) * 100
    return vislux
 
 

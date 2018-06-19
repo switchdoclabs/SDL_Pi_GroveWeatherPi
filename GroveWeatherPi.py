@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 3.01 May 30, 2018
+# Version 3.02 June 19, 201 June 19, 201 June 19, 2018 June 19, 2018 June 19, 201888 
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -1701,7 +1701,7 @@ def checkForShutdown():
 		shutdownPi("low voltage shutdown")
 
 print  ""
-print "GroveWeatherPi Solar Powered Weather Station Version 3.01 - SwitchDoc Labs"
+print "GroveWeatherPi Solar Powered Weather Station Version 3.02 - SwitchDoc Labs"
 print ""
 print ""
 print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
@@ -1746,11 +1746,11 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.01")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.02")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')
-bodyText = "GroveWeatherPi Version 3.01 Startup \n"+ipAddress+"\n"
+bodyText = "GroveWeatherPi Version 3.02 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
