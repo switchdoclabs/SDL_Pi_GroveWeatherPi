@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 3.03 November 2019
+# Version 3.04 November 2019
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -1747,7 +1747,7 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.03")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.04")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')

@@ -6,6 +6,9 @@
 #
 #
 
+Version 1.1:  November 14, 2019 - Added CRC Check.  Now returns -1 in CRC on CRC Fail 
+ 
+
 #Introduction
 This is a pure python AM2315 library to replace the tentacle_pi C based library
 

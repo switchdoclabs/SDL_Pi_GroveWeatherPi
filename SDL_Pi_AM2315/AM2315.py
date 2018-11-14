@@ -25,6 +25,21 @@ class AM2315:
         self.temperature = 0
         self.crc = 0
 
+
+    def verify_crc(self, char):
+        """Returns the 16-bit CRC of sensor data"""
+        crc = 0xFFFF
+        for l in char:
+                crc = crc ^ l
+                for i in range(1,9):
+                    if(crc & 0x01):
+                         crc = crc >> 1
+                         crc = crc ^ 0xA001
+                    else:
+                         crc = crc >> 1
+        return crc
+
+
     def _read_data(self):
         count = 0
         tmp = None
@@ -49,8 +64,16 @@ class AM2315:
         self.temperature = (((tmp[4] & 0x7F) << 8) | tmp[5]) / 10.0
         if (tmp[4] & 0x80):
             self.temperature = -self.temperature
-        self.crc = ((tmp[6] << 8) | tmp[7]) 
 
+        self.crc = ((tmp[7] << 8) | tmp[6]) 
+        # Verify CRC here
+        # force CRC error with the next line
+        #tmp[0] = tmp[0]+1
+        t = bytearray([tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]])
+        c = self.verify_crc(t)
+
+        if self.crc != c:
+            self.crc = -1
 
     def read_temperature(self):
         self._read_data()

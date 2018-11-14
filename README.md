@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 3.03 
+Version 3.04 
 
 http://www.switchdoc.com/
+
+November 14, 2018 - Version 3.04 Added CRC checking to the  AM2315 Python Driver. 
 
 November 14, 2018 - Version 3.03 Added New AM2315 Python Driver. removed tentacle_pi
 
