@@ -10,6 +10,8 @@ November 14, 2018 - Version 3.04 Added CRC checking to the  AM2315 Python Driver
 
 November 14, 2018 - Version 3.03 Added New AM2315 Python Driver. removed tentacle_pi
 
+October 1, 2018 - Improved README.md install instructions
+
 June 19, 2018 - Version 3.02 Fixed SI1145 Gain (made for outdoors) Adjusted Lux readings for outdoor sunlight rough calibration
 
 May 30, 2018 - Version 3.01 Fixed MySQL Garding, bad read issues with SI1145, gave fix for Mising BBIO Library in README.md
@@ -101,8 +103,9 @@ git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
 cd Adafruit_Python_GPIO
 sudo python setup.py install
 cd ..
+cd SDL_Pi_GroveWeatherPi
 cd Adafruit_Python_SSD1306
-sudo python setup.py
+sudo python setup.py install
 </pre>
 SwitchDocLabs Documentation for WeatherRack/WeatherPiArduino under products on: store.switchdoc.com
 
@@ -137,8 +140,5 @@ NOTE:
 
 If you have a WXLink wireless transmitter installed, the software assumes you have connected your AM2315 outdoor temp/humidity sensor to the WXLink.  If you put another AM2315 on your local system, it will use those values instead of the WXLink values
 
-----------
-
-----------
 
 
