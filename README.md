@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 3.02 
+Version 3.03 
 
 http://www.switchdoc.com/
+
+November 14, 2018 - Version 3.03 Added New AM2315 Python Driver. removed tentacle_pi
 
 June 19, 2018 - Version 3.02 Fixed SI1145 Gain (made for outdoors) Adjusted Lux readings for outdoor sunlight rough calibration
 
@@ -66,6 +68,7 @@ sudo apt-get install python-smbus
 
 Install this next:
 
+
 git clone https://github.com/adafruit/Adafruit_Python_PureIO.git<BR>
 cd Adafruit_Python_PureIO<BR>
 sudo python setup.py install<BR>
@@ -76,7 +79,6 @@ sudo apt-get install python-pip
 
 sudo apt-get install libi2c-dev
 
-sudo pip install tentacle_pi
 
 #Installing apscheduler
 

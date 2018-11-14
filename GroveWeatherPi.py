@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# Version 3.02 June 19, 201 June 19, 201 June 19, 2018 June 19, 2018 June 19, 201888 
+# Version 3.03 November 2019
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -40,6 +40,7 @@ sys.path.append('./SDL_Pi_TCA9545')
 sys.path.append('./SDL_Pi_SI1145')
 sys.path.append('./graphs')
 sys.path.append('./SDL_Pi_HDC1000')
+sys.path.append('./SDL_Pi_AM2315')
 
 
 import subprocess
@@ -514,13 +515,13 @@ if (config.TCA9545_I2CMux_Present):
 
 # Detect AM2315
 try:
-        from tentacle_pi.AM2315 import AM2315
+        import AM2315
         try:
-		am2315 = AM2315(0x5c,"/dev/i2c-1")
-    		outsideTemperature, outsideHumidity, crc_check = am2315.sense() 
-		#print "outsideTemperature: %0.1f C" % outsideTemperature
-    		#print "outsideHumidity: %0.1f %%" % outsideHumidity
-    		#print "crc: %i" % crc_check
+		am2315 = AM2315.AM2315()
+    		outsideTemperature, outsideHumidity, crc_check = am2315.read_humidity_temperature_crc() 
+		print "outsideTemperature: %0.1f C" % outsideTemperature
+    		print "outsideHumidity: %0.1f %%" % outsideHumidity
+    		print "crc: 0x%02x" % crc_check
                 config.AM2315_Present = True
 		if (crc_check == -1):
                 	config.AM2315_Present = False
@@ -529,7 +530,6 @@ try:
                 config.AM2315_Present = False
 except:
         config.AM2315_Present = False
-        print "------> See Readme to install tentacle_pi"
 
 
 
@@ -1024,7 +1024,7 @@ def sampleWeather():
         		 tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 
 
-    		outsideTemperature, outsideHumidity, crc_check = am2315.sense()
+    		outsideTemperature, outsideHumidity, crc_check = am2315.read_humidity_temperature_crc()
 		
 	if (config.WeatherUnderground_Present == True):
 
@@ -1372,10 +1372,11 @@ def sampleAndDisplay():
         print "----------------- "
 
         if (config.AM2315_Present):
-    		outsideTemperature, outsideHumidity, crc_check = am2315.sense()
+    		outsideTemperature, outsideHumidity, crc_check = am2315.read_humidity_temperature_crc()
     		print "outsideTemperature: %0.1f C" % outsideTemperature
     		print "outsideHumidity: %0.1f %%" % outsideHumidity
-    		print "crc: %s" % crc_check
+    		print "crc: 0x%02x" % crc_check
+    		
         print "----------------- "
 
 	if (config.SunAirPlus_Present):
@@ -1746,11 +1747,11 @@ rain60Minutes = 0.0
 
 as3935Interrupt = False
 
-pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.02")
+pclogging.log(pclogging.INFO, __name__, "GroveWeatherPi Startup Version 3.03")
 
 subjectText = "The GroveWeatherPi Raspberry Pi has #rebooted."
 ipAddress = commands.getoutput('hostname -I')
-bodyText = "GroveWeatherPi Version 3.02 Startup \n"+ipAddress+"\n"
+bodyText = "GroveWeatherPi Version 3.03 Startup \n"+ipAddress+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
