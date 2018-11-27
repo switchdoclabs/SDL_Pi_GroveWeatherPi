@@ -13,6 +13,8 @@ AM2315_I2CADDR = 0x5C
 AM2315_READREG = 0x03
 MAXREADATTEMPT = 3
 
+AM2315DEBUG = True
+
 class AM2315:
     """Base functionality for AM2315 humidity and temperature sensor. """
 
@@ -24,6 +26,10 @@ class AM2315:
         self.humidity = 0
         self.temperature = 0
         self.crc = 0
+        self.AM2315PreviousTemp = -1000
+        self.goodreads = 0
+        self.badreadings = 0
+        self.badcrcs = 0
 
 
     def verify_crc(self, char):
@@ -52,13 +58,32 @@ class AM2315:
                 self._device.writeList(AM2315_READREG,[0x00, 0x04])
                 time.sleep(0.09)
                 tmp = self._device.readList(AM2315_READREG,8)
+                self.temperature = (((tmp[4] & 0x7F) << 8) | tmp[5]) / 10.0
+                # check for > 10.0 degrees higher
+                if (self.AM2315PreviousTemp != -1000):   # ignore first time
+                        if (abs(self.AM2315PreviousTemp - self.temperature) > 10.0):
+                            # OK, temp is bad.  Ignore
+                            if (AM2315DEBUG == True):
+                                print ">>>>>>>>>>>>>"
+                                print "Bad AM2315 Temperature = ", self.temperature
+                                print ">>>>>>>>>>>>>"
+                                self.badreadings = self.badreadings+1
+                                tmp = None
+                        else:
+                            # Good Temperature
+                            self.AM2315PreviousTemp = self.temperature
+                else:
+                    # assume first is good temperature
+                    self.AM2315PreviousTemp = self.temperature
                 # IF WE HAVE DATA, LETS EXIT THIS LOOP
                 if tmp != None:
                     break
             except:
+                if (AM2315DEBUG == True):
+                    print "AM2315readCount = ", count
                 count += 1
                 time.sleep(0.01)
-        
+       
         # GET THE DATA OUT OF THE LIST WE READ
         self.humidity = ((tmp[2] << 8) | tmp[3]) / 10.0
         self.temperature = (((tmp[4] & 0x7F) << 8) | tmp[5]) / 10.0
@@ -72,8 +97,19 @@ class AM2315:
         t = bytearray([tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]])
         c = self.verify_crc(t)
 
+        if (AM2315DEBUG == True):
+            print "AM2315temperature=",self.temperature
+            print "AM2315humdity=",self.humidity
+            print "AM2315crc=",self.crc
+            print "AM2315c=",c
+
         if self.crc != c:
+            if (AM2315DEBUG == True):
+                print "AM2314 BAD CRC"
+            self.badcrcs = self.badcrcs + 1
             self.crc = -1
+        else:
+            self.goodreads = self.goodreads+1
 
     def read_temperature(self):
         self._read_data()
@@ -90,6 +126,9 @@ class AM2315:
     def read_humidity_temperature_crc(self):
         self._read_data()
         return (self.humidity, self.temperature, self.crc)
+
+    def read_status_info(self):
+        return  (self.goodreads, self.badreadings, self.badcrcs)
 
 if __name__ == "__main__":
     am2315 = AM2315()

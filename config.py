@@ -33,6 +33,14 @@ WeatherUnderground_Present = False
 WeatherUnderground_StationID = "KWXXXXX"
 WeatherUnderground_StationKey = "YYYYYYY"
 
+############
+# Blynk configuration
+############
+
+USEBLYNK = False 
+BLYNK_AUTH = 'xxxxx'
+BLYNK_URL = 'http://blynk-cloud.com/'
+
 
 
 # for barometeric pressure - needed to calculate sealevel equivalent - set your weatherstation elevation here
@@ -56,6 +64,7 @@ AM2315_Present = False
 ADS1015_Present = False
 ADS1115_Present = False
 OLED_Present = False
+OLED_Originally_Present = False
 WXLink_Present = False
 Sunlight_Preset = False
 

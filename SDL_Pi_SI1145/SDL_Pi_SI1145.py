@@ -154,7 +154,7 @@ SI1145_REG_CHIPSTAT                     = 0x30
 SI1145_ADDR                             = 0x60
 
 class SDL_Pi_SI1145(object):
-        def __init__(self, address=SI1145_ADDR, busnum=1):
+        def __init__(self, address=SI1145_ADDR, busnum=1, indoor=1):
 
                 self._logger = logging.getLogger('SI1145')
 
@@ -165,7 +165,7 @@ class SDL_Pi_SI1145(object):
                 self._reset()
 
                 # Load calibration values.
-                self._load_calibration()
+                self._load_calibration(indoor)
 
         # device reset
         def _reset(self):
@@ -190,7 +190,7 @@ class SDL_Pi_SI1145(object):
                 return paramVal
 
         # load calibration to sensor
-        def _load_calibration(self):
+        def _load_calibration(self, indoor):
                 # /***********************************/
                 # Enable UVindex measurement coefficients!
                 self._device.write_byte_data(SI1145_ADDR,SI1145_REG_UCOEFF0, 0x29)
@@ -225,8 +225,10 @@ class SDL_Pi_SI1145(object):
                 self.writeParam(SI1145_PARAM_ALSIRADCMUX, SI1145_PARAM_ADCMUX_SMALLIR)
 
                 # Fastest clocks, clock div 1
-                self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
-                #self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 4)
+                if (indoor == 1):
+                    self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 0)
+                else:
+                    self.writeParam(SI1145_PARAM_ALSIRADCGAIN, 4)
 
                 # Take 511 clocks to measure
                 self.writeParam(SI1145_PARAM_ALSIRADCOUNTER, SI1145_PARAM_ADCCOUNTER_511CLK)
@@ -236,8 +238,10 @@ class SDL_Pi_SI1145(object):
                 #self.writeParam(SI1145_PARAM_ALSIRADCMISC, SI1145_PARAM_ALSIRADCMISC_RANGE)
 
                 # fastest clocks, clock div 1
-                self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
-                #self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 4)
+                if (indoor == 1):
+                    self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 0)
+                else:
+                    self.writeParam(SI1145_PARAM_ALSVISADCGAIN, 4)
 
 
                 # Take 511 clocks to measure
