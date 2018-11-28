@@ -1599,7 +1599,6 @@ def updateRain():
 	addRainToArray(totalRain - lastRainReading)	
 	rain60Minutes = totalRainArray()
 	lastRainReading = totalRain
-	print "Rain in past 60 minutes=",rain60Minutes
 
 def statusRain():
         if (config.USEBLYNK):
