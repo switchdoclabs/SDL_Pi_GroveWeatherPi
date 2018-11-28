@@ -10,7 +10,7 @@
 
 # imports
 
-GWPVERSION = "3.10"
+GWPVERSION = "3.11"
 GWPDEBUG = False
 
 
@@ -1600,9 +1600,10 @@ def updateRain():
 	rain60Minutes = totalRainArray()
 	lastRainReading = totalRain
 	print "Rain in past 60 minutes=",rain60Minutes
+
+def statusRain():
         if (config.USEBLYNK):
             updateBlynk.blynkStatusTerminalUpdate("Rain in past 60 minutes=%0.2fmm"%rain60Minutes)
-
 
 def checkForShutdown():
 	if (batteryVoltage < 3.5):
@@ -1733,6 +1734,7 @@ if (config.enable_MySQL_Logging == True):
 	scheduler.add_job(writePowerRecord, 'interval', seconds=5*60)
 
 scheduler.add_job(updateRain, 'interval', seconds=5*60)
+scheduler.add_job(statusRain, 'interval', seconds=60*60)
 scheduler.add_job(checkForShutdown, 'interval', seconds=5*60)
 
 # every 15 minutes, build new graphs

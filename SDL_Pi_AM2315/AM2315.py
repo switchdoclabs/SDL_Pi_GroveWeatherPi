@@ -8,6 +8,8 @@
 # MODULE IMPORTS
 import time
 
+import traceback
+
 # GLOBAL VARIABLES
 AM2315_I2CADDR = 0x5C
 AM2315_READREG = 0x03
@@ -51,9 +53,12 @@ class AM2315:
         tmp = None
         while count <= MAXREADATTEMPT:
             try:
-                # WAKE UP
-                self._device.write8(AM2315_READREG,0x00)
-                time.sleep(0.09)
+                try:
+                    # WAKE UP
+                    self._device.write8(AM2315_READREG,0x00)
+                except:
+                    time.sleep(0.09)
+
                 # TELL THE DEVICE WE WANT 4 BYTES OF DATA
                 self._device.writeList(AM2315_READREG,[0x00, 0x04])
                 time.sleep(0.09)
@@ -78,11 +83,15 @@ class AM2315:
                 # IF WE HAVE DATA, LETS EXIT THIS LOOP
                 if tmp != None:
                     break
-            except:
+            except Exception as ex:
                 if (AM2315DEBUG == True):
+                    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                    message = template.format(type(ex).__name__, ex.args)
+                    print message
+                    print traceback.format_exc()
                     print "AM2315readCount = ", count
-                count += 1
-                time.sleep(0.01)
+            count += 1
+            time.sleep(0.10)
        
         # GET THE DATA OUT OF THE LIST WE READ
         self.humidity = ((tmp[2] << 8) | tmp[3]) / 10.0

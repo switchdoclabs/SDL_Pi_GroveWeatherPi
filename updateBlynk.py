@@ -27,6 +27,21 @@ def blynkInit():
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V42?value=255')
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V43?value=255')
 
+        # read english Metric in from file
+
+        try:
+            f = open("//home/pi/SDL_Pi_GroveWeatherPi/state/EnglishMetric.txt", "r")
+            value = f.read()
+            f.close()
+        except:
+            value = 0
+        state.EnglishMetric = value
+        if (state.EnglishMetric == 0):
+            r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=0')
+        else:        
+            r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=1')
+
+
     except Exception as e:
         print "exception in blynkInit"
         print (e)
@@ -279,9 +294,16 @@ def blynkStatusUpdate():
                 if (DEBUGBLYNK):
                     print "blynkStatusUpdate:POSTBRC:state.EnglishMetric set to Metric"
                 blynkStatusTerminalUpdate("Set to Metric Units ")
+                f = open("/home/pi/SDL_Pi_GroveWeatherPi/state/EnglishMetric.txt", "w")
+                f.write("1")
+                f.close()
         else:
+
             if (state.EnglishMetric == 1):
                 state.EnglishMetric = 0
+                f = open("/home/pi/SDL_Pi_GroveWeatherPi/state/EnglishMetric.txt", "w")
+                f.write("0")
+                f.close()
                 if (DEBUGBLYNK):
                     print "blynkStatusUpdate:POSTBRC:state.EnglishMetric set to English"
                 blynkStatusTerminalUpdate("Set to English Units ")
