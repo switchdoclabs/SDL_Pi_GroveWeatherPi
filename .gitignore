@@ -7,3 +7,4 @@ tx*
 nohup.out
 .*DS_Store
 conflocal.py
+state/EnglishMetric.txt

@@ -17,6 +17,9 @@ DEBUGBLYNK = False
 def blynkInit():
     # initalize button states
     try:
+        if (DEBUGBLYNK):
+            print "Entering blynkInit:"
+
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V5?value=0')
         if (state.runOLED == True):
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V6?value=1')
@@ -30,17 +33,24 @@ def blynkInit():
         # read english Metric in from file
 
         try:
-            f = open("//home/pi/SDL_Pi_GroveWeatherPi/state/EnglishMetric.txt", "r")
-            value = f.read()
+            f = open("/home/pi/SDL_Pi_GroveWeatherPi/state/EnglishMetric.txt", "r")
+            value = int(f.read())
             f.close()
-        except:
+        except Exception as e:
+            print "initial state - no EnglishMetric.txt value=", value
+            print "exception in blynkInit"
+            print (e)
             value = 0
         state.EnglishMetric = value
+        if (DEBUGBLYNK):
+            print "state.EnglishMetric = ", value
         if (state.EnglishMetric == 0):
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=0')
         else:        
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=1')
 
+        if (DEBUGBLYNK):
+            print "Exiting blynkInit:"
 
     except Exception as e:
         print "exception in blynkInit"
@@ -285,8 +295,8 @@ def blynkStatusUpdate():
         # look for English or Metric 
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/get/V8') # read button state
         if (DEBUGBLYNK):
-            print "blynkStatusUpdate:POSTBR:r.status_code:",r.status_code
-            print "blynkStatusUpdate:POSTBR:r.text:",r.text
+            print "blynkStatusUpdate:POSTEM:r.status_code:",r.status_code
+            print "blynkStatusUpdate:POSTEM:r.text:",r.text
     
         if (r.text == '["1"]'):
             if (state.EnglishMetric == 0):

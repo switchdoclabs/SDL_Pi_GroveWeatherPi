@@ -10,7 +10,7 @@
 
 # imports
 
-GWPVERSION = "3.11"
+GWPVERSION = "3.12"
 GWPDEBUG = False
 
 
