@@ -10,7 +10,7 @@
 
 # imports
 
-GWPVERSION = "3.12"
+GWPVERSION = "3.13"
 GWPDEBUG = False
 
 
@@ -1102,8 +1102,14 @@ def sampleWeather():
  		if (config.TCA9545_I2CMux_Present):
         		 tca9545.write_control_register(TCA9545_CONFIG_BUS0)
 
+                try:
+    		    ToutsideHumidity, ToutsideTemperature, crc_check = am2315.read_humidity_temperature_crc()
+                except:
+                     if am2315 is None:
+		        am2315 = AM2315.AM2315()
+                        print ("am2315 None Error Detected")
+                     crc_check = -1
 
-    		ToutsideHumidity, ToutsideTemperature, crc_check = am2315.read_humidity_temperature_crc()
 		if (crc_check !=  -1):
                     outsideTemperature = ToutsideTemperature
                     outsideHumidity = ToutsideHumidity
