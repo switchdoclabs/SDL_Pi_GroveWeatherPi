@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 3.13 
+Version 3.14 
 
 http://www.switchdoc.com/
+
+January 12, 2018 - Version 3.14  Fixed am2315 not assigned error 
 
 January 10, 2018 - Version 3.13  Added "None" detection to AM2315, added Try, Except loop on AM2315 read 
 

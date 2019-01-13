@@ -10,7 +10,7 @@
 
 # imports
 
-GWPVERSION = "3.13"
+GWPVERSION = "3.14"
 GWPDEBUG = False
 
 
@@ -569,25 +569,21 @@ if (config.TCA9545_I2CMux_Present):
 outsideHumidity = 0.0
 outsideTemperature = 0.0
 crc_check = -1
+import AM2315
 try:
-        import AM2315
-        try:
-		am2315 = AM2315.AM2315()
-    		outsideHumidity, outsideTemperature, crc_check = am2315.read_humidity_temperature_crc() 
-		print "outsideTemperature: %0.1f C" % outsideTemperature
-    		print "outsideHumidity: %0.1f %%" % outsideHumidity
-                state.currentOutsideTemperature = outsideTemperature
-                state.currentOutsideHumidity = outsideHumidity
-    		print "crc: 0x%02x" % crc_check
-                config.AM2315_Present = True
-		if (crc_check == -1):
-                	config.AM2315_Present = False
+ 	am2315 = AM2315.AM2315()
+	outsideHumidity, outsideTemperature, crc_check = am2315.read_humidity_temperature_crc() 
+	print "outsideTemperature: %0.1f C" % outsideTemperature
+    	print "outsideHumidity: %0.1f %%" % outsideHumidity
+        state.currentOutsideTemperature = outsideTemperature
+        state.currentOutsideHumidity = outsideHumidity
+        print "crc: 0x%02x" % crc_check
+        config.AM2315_Present = True
+        if (crc_check == -1):
+        	config.AM2315_Present = False
 
-        except:
-                config.AM2315_Present = False
 except:
         config.AM2315_Present = False
-
 
 
 
@@ -948,6 +944,9 @@ def sampleWeather():
 
 	global block1, block2
 
+        global am2315
+
+
         # blink GPIO LED when it's run
         GPIO.setup(SUNAIRLED, GPIO.OUT)
         GPIO.output(SUNAIRLED, True)
@@ -1255,7 +1254,6 @@ def sampleAndDisplay():
     global totalRain, as3935LightningCount
     global as3935, as3935LastInterrupt, as3935LastDistance, as3935LastStatus
     global block1, block2
-
 
     I2C_Lock.acquire()
 
@@ -1704,6 +1702,9 @@ if (config.SunAirPlus_Present):
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
 
 sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+
+
+
 
 # Initial Sample And Display
 sampleAndDisplay()
