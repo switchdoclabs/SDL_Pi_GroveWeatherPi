@@ -1,7 +1,7 @@
 #
 #
 # GroveWeatherPi Solar Powered Weather Station
-# November 2019
+# February 2019
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -10,7 +10,7 @@
 
 # imports
 
-GWPVERSION = "3.14"
+GWPVERSION = "3.15"
 GWPDEBUG = False
 
 
