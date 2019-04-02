@@ -154,7 +154,7 @@ SI1145_REG_CHIPSTAT                     = 0x30
 SI1145_ADDR                             = 0x60
 
 class SDL_Pi_SI1145(object):
-        def __init__(self, address=SI1145_ADDR, busnum=1, indoor=1):
+        def __init__(self, address=SI1145_ADDR, busnum=1, indoor=0):
 
                 self._logger = logging.getLogger('SI1145')
 
@@ -266,6 +266,7 @@ class SDL_Pi_SI1145(object):
         #returns visible + IR light levels
         def readVisible(self):
                 data =  self._device.read_i2c_block_data(SI1145_ADDR,0x22,2)
+                print "data =", data
 		return data[1] * 256 + data[0]
 
         #returns IR light levels

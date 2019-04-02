@@ -2,9 +2,11 @@ GroveWeatherPi Libraries and Example for Raspberry Pi Solar Powered Weather Stat
 
 Supports SwitchDoc Labs WeatherRack WeatherBoard (WeatherPiArduino V2 and above)
 
-Version 3.15 
+Version 3.16 
 
 http://www.switchdoc.com/
+
+March 30, 2019 - Version 3.16 Improved AM2315 reliablity - added support for Grove PowerSave 
 
 February 8, 2019 - Version 3.15  Increase Max Retries on AM2315 to 10 per suggestion
 
